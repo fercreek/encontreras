@@ -19,25 +19,24 @@ def _ensure_dir(directory: str | Path) -> Path:
     return path
 
 
-def _timestamped_name(prefix: str, ext: str) -> str:
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    return f"{prefix}_{ts}.{ext}"
+def _get_filename(prefix: str, ext: str) -> str:
+    return f"{prefix}.{ext}"
 
 
-def to_csv(df: pd.DataFrame, output_dir: str | Path, prefix: str = "encontreras") -> Path:
-    """Save DataFrame to a timestamped CSV file."""
+def to_csv(df: pd.DataFrame, output_dir: str | Path, prefix: str = "encontreras_demo") -> Path:
+    """Save DataFrame to a CSV file."""
     out = _ensure_dir(output_dir)
-    filename = _timestamped_name(prefix, "csv")
+    filename = _get_filename(prefix, "csv")
     filepath = out / filename
     df.to_csv(filepath, index=False, encoding="utf-8-sig")
     console.print(f"[green]✔[/green] CSV saved → [bold]{filepath}[/bold]")
     return filepath
 
 
-def to_json(df: pd.DataFrame, output_dir: str | Path, prefix: str = "encontreras") -> Path:
-    """Save DataFrame to a timestamped JSON file."""
+def to_json(df: pd.DataFrame, output_dir: str | Path, prefix: str = "encontreras_demo") -> Path:
+    """Save DataFrame to a JSON file."""
     out = _ensure_dir(output_dir)
-    filename = _timestamped_name(prefix, "json")
+    filename = _get_filename(prefix, "json")
     filepath = out / filename
     df.to_json(filepath, orient="records", indent=2, force_ascii=False)
     console.print(f"[green]✔[/green] JSON saved → [bold]{filepath}[/bold]")

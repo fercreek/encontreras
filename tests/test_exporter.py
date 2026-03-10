@@ -97,11 +97,10 @@ class TestCsvExport:
         path = to_csv(sample_df, nested)
         assert path.exists()
 
-    def test_timestamped_filenames_unique(self, sample_df, tmp_output):
+    def test_overwrites_existing_file(self, sample_df, tmp_output):
         path1 = to_csv(sample_df, tmp_output)
-        time.sleep(1.1)  # ensure different second in filename
         path2 = to_csv(sample_df, tmp_output)
-        assert path1.name != path2.name
+        assert path1.name == path2.name
 
 
 class TestJsonExport:
@@ -132,4 +131,4 @@ class TestJsonExport:
 
     def test_custom_prefix_in_filename(self, sample_df, tmp_output):
         path = to_json(sample_df, tmp_output, prefix="mi_busqueda")
-        assert path.name.startswith("mi_busqueda_")
+        assert path.name == "mi_busqueda.json"
