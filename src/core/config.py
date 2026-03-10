@@ -32,6 +32,16 @@ MAPS_SELECTORS = {
     "place_rating": 'div.F7nice span[aria-hidden="true"]',
     "place_reviews": 'div.F7nice span[aria-label*="reviews"], '
                      'div.F7nice span[aria-label*="reseñas"]',
+    "place_category": 'button[jsaction*="category"], '
+                      '[class*="DkEaL"]',
+    "place_hours": '[aria-label*="Hours"], '
+                   '[aria-label*="Horario"], '
+                   '.o7FIHb',
+    "place_description": '[class*="WeS02d"], '
+                         'div.PYvSYb span',
+    "place_price_level": 'span[aria-label*="Price"], '
+                         'span[aria-label*="Precio"]',
+    "place_plus_code": 'button[data-item-id="oloc"] .Io6YTe',
     "back_button": 'button[aria-label="Back"], button[aria-label="Atrás"]',
 }
 

@@ -46,20 +46,33 @@ class GoogleMapsExtractor:
         console.print(f"[cyan]🔍 Buscando:[/cyan] {search_term}")
         await self.page.goto(url, timeout=PAGE_TIMEOUT, wait_until="domcontentloaded")
 
-        # Wait for the results feed to render
+        # ── Check if we got redirected to a specific place directly ─────
+        # Sometimes a very specific query (e.g. "Rambla Monterrey") goes straight to the place page
         try:
             await self.page.wait_for_selector(
-                MAPS_SELECTORS["results_container"],
+                MAPS_SELECTORS["results_container"] + ", " + MAPS_SELECTORS["place_name"],
                 timeout=NAVIGATION_TIMEOUT,
             )
         except PwTimeout:
-            console.print("[yellow]⚠ No se encontró feed de resultados. Verifica la búsqueda.[/yellow]")
+            console.print("[yellow]⚠ No se encontró feed ni lugar. Verifica la búsqueda.[/yellow]")
             return []
 
-        # ── Scroll to load more results ──────────────────────────────────
+        # If we see a place name immediately (and no feed), it's a direct match
+        is_direct_match = False
         feed = await self.page.query_selector(MAPS_SELECTORS["results_container"])
         if not feed:
-            return []
+            place_name_el = await self.page.query_selector(MAPS_SELECTORS["place_name"])
+            if place_name_el:
+                is_direct_match = True
+            else:
+                return []
+                
+        if is_direct_match:
+            console.print("[cyan]📋 Coincidencia exacta encontrada, extrayendo un solo resultado…[/cyan]")
+            biz = await self._extract_place_from_current_page(1, 1)
+            return [biz] if biz else []
+
+        # ── Scroll to load more results ──────────────────────────────────
 
         links_seen: set[str] = set()
         scroll_attempts = 0
@@ -110,6 +123,10 @@ class GoogleMapsExtractor:
     async def _extract_place(self, href: str, idx: int, total: int) -> Business | None:
         """Navigate to a place page and extract structured data."""
         await self.page.goto(href, timeout=PAGE_TIMEOUT, wait_until="domcontentloaded")
+        return await self._extract_place_from_current_page(idx, total)
+        
+    async def _extract_place_from_current_page(self, idx: int, total: int) -> Business | None:
+        """Extract structured data from the currently loaded place page."""
 
         # Wait for the place name to appear
         try:
@@ -132,6 +149,18 @@ class GoogleMapsExtractor:
 
         rating = self._parse_float(rating_text)
         reviews_count = self._parse_int(reviews_text)
+        
+        category = await self._text(MAPS_SELECTORS["place_category"])
+        hours = await self._text(MAPS_SELECTORS["place_hours"])
+        description = await self._text(MAPS_SELECTORS["place_description"])
+        price_level = await self._text(MAPS_SELECTORS["place_price_level"])
+        
+        # Ocasionalmente el texto de precio trae símbolos extra o es muy largo, lo limpiamos básico
+        if price_level and ("$" in price_level or "€" in price_level or "£" in price_level):
+            # Extraer solo los símbolos de moneda consecutivos si existen
+            match = re.search(r"([$€£]+)", price_level)
+            if match:
+                price_level = match.group(1)
 
         biz = Business(
             name=name,
@@ -140,6 +169,12 @@ class GoogleMapsExtractor:
             address=address,
             rating=rating,
             reviews_count=reviews_count,
+            category=category,
+            hours=hours,
+            description=description,
+            price_level=price_level,
+            maps_url=self.page.url,
+            plus_code=await self._text(MAPS_SELECTORS["place_plus_code"])
         )
 
         status = "✔" if biz.website else "–"
