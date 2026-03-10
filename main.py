@@ -3,8 +3,9 @@
 encontreras — CLI para extraer y enriquecer datos de negocios desde Google Maps.
 
 Uso:
-    python main.py --query "restaurantes" --location "CDMX"
-    python main.py --query "dentistas" --location "Monterrey" --max-results 10 --format json
+    python main.py run --query "restaurantes" --location "CDMX"
+    python main.py serve                           # Abre dashboard web
+    python main.py serve --port 3000 --output ./mis_datos
 """
 
 from __future__ import annotations
@@ -89,6 +90,27 @@ def run(
     except Exception as exc:
         console.print(f"\n[red]✗ Error: {exc}[/red]")
         raise typer.Exit(code=1)
+
+
+@app.command()
+def serve(
+    output_dir: str = typer.Option(
+        DEFAULT_OUTPUT_DIR,
+        "--output", "-o",
+        help="Directorio con los archivos JSON de resultados",
+    ),
+    port: int = typer.Option(
+        8888,
+        "--port", "-p",
+        help="Puerto del servidor web",
+    ),
+) -> None:
+    """
+    🖥  Abre el dashboard web para visualizar los resultados extraídos.
+    """
+    from web.server import start_server
+
+    start_server(output_dir=output_dir, port=port)
 
 
 if __name__ == "__main__":
