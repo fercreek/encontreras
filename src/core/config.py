@@ -67,10 +67,13 @@ EMAIL_BLACKLIST_DOMAINS = {
     "example.com",
     "sentry.io",
     "wixpress.com",
+    "nccdn.net",
     "w3.org",
     "schema.org",
     "googleapis.com",
     "cloudflare.com",
+    "domain.com",
+    "yourdomain.com",
 }
 
 # Social profile paths to skip (generic / not a business page)

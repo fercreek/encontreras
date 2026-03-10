@@ -126,7 +126,7 @@ class WebsiteEnricher:
         for email in raw_matches:
             email = email.lower().strip()
             domain = email.split("@")[1] if "@" in email else ""
-            if domain in EMAIL_BLACKLIST_DOMAINS:
+            if any(domain == b or domain.endswith("." + b) for b in EMAIL_BLACKLIST_DOMAINS):
                 continue
             # Skip likely file extensions mistaken as emails
             if domain.endswith((".png", ".jpg", ".gif", ".svg", ".webp")):
