@@ -97,21 +97,36 @@ def serve(
     output_dir: str = typer.Option(
         DEFAULT_OUTPUT_DIR,
         "--output", "-o",
-        help="Directorio con los archivos JSON de resultados",
+        help="Directorio con los archivos de base de datos o resultados",
     ),
     port: int = typer.Option(
         8888,
         "--port", "-p",
         help="Puerto del servidor web",
     ),
+    reload: bool = typer.Option(
+        False,
+        "--reload", "-r",
+        help="Habilitar reinicio automático al guardar cambios en el código",
+    ),
 ) -> None:
     """
     🖥  Abre el dashboard web para visualizar los resultados extraídos.
     """
+    if reload:
+        import hupper
+        # Inicia el supervisor de hupper, usando el entry point principal
+        # para que Typer vuelva a leer los argumentos de sys.argv
+        reloader = hupper.start_reloader('main.app_entry')
+        
     from web.server import start_server
-
     start_server(output_dir=output_dir, port=port)
 
 
-if __name__ == "__main__":
+def app_entry():
+    """Entry point for hupper reloader."""
     app()
+
+
+if __name__ == "__main__":
+    app_entry()
