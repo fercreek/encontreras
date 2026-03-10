@@ -35,16 +35,49 @@ class WebsiteEnricher:
             return business
 
         try:
-            await self.page.goto(
+            response = await self.page.goto(
                 business.website,
                 timeout=NAVIGATION_TIMEOUT,
                 wait_until="domcontentloaded",
             )
             # Give JS a moment to render
             await self.page.wait_for_timeout(2_000)
+            
+            if response:
+                if response.status >= 400:
+                    business.site_status = f"ERROR_{response.status}"
+                    business.site_issues.append(f"HTTP {response.status}")
+                else:
+                    business.site_status = "OK"
+            else:
+                business.site_status = "UNKNOWN"
+                
         except (PwTimeout, Exception) as exc:
             console.print(f"  [yellow]⚠ No se pudo cargar {business.domain}: {exc}[/yellow]")
+            business.site_status = "DOWN"
+            business.site_issues.append("Timeout o error de conexión")
             return business
+
+        # ── Evaluate Website Health ───────────────────────────────────────
+        if business.site_status == "OK":
+            try:
+                issues = await self.page.evaluate('''() => {
+                    const issues = [];
+                    if (!document.querySelector("meta[name='viewport'][content*='width=device-width']")) {
+                        issues.push("Sin optimización móvil (viewport)");
+                    }
+                    if (!document.querySelector("h1")) {
+                        issues.push("Falta etiqueta H1 principal");
+                    }
+                    if (!document.title || document.title.length < 5) {
+                        issues.push("Título corto o ausente");
+                    }
+                    return issues;
+                }''')
+                if issues:
+                    business.site_issues.extend(issues)
+            except Exception:
+                pass
 
         try:
             html = await self.page.content()
