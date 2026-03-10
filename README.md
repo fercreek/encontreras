@@ -1,108 +1,162 @@
-# encontreras
+# encontreras 🎯 | Autonomous Outbound Agent
 
-🔍 CLI Open Source para extraer y enriquecer datos de negocios desde Google Maps.
+*[English version below](#english-version)*
 
-## Instalación
+**Encontreras** es un Agente Autónomo (PoC) en Python diseñado para la extracción, enriquecimiento y evaluación semántica de prospectos comerciales (B2B Lead Generation). 
 
+## 🎯 Finalidad: De un Scraper a un Agente de Inteligencia
+
+La mayoría de las herramientas de extracción se limitan a descargar listas vacías de Google Maps. **Encontreras** fue diseñado con una mentalidad de **Inteligencia de Ventas (Outbound)**. Su objetivo es demostrar cómo se puede *abstraer información de valor y contexto* a partir de la huella digital pública de un negocio, antes de realizar el primer contacto.
+
+En lugar de solo darte un teléfono, la herramienta perfila al prospecto: ¿Su página web está optimizada? ¿Están activos en redes sociales? ¿Tienen buenas reseñas pero mala presencia digital? Esta información es oro para redactar mensajes en frío (Cold DMs/Emails) sumamente personalizados.
+
+---
+
+## ⚙️ ¿Cómo Funciona? (El Pipeline)
+
+El sistema opera como un embudo de enriquecimiento en cascada:
+
+1. **Scraping Base (Google Maps)**: Extrae el NAP (Name, Address, Phone), horarios, categoría, nivel de precios y reseñas de los negocios en una ciudad específica.
+2. **Auditoría y Enriquecimiento Web**: Navega automáticamente a la página web del negocio (si tiene). Extrae correos electrónicos, encuentra sus redes sociales reales y **evalúa la salud del sitio** (ej. si la página está caída, si le falta la etiqueta H1 o si no está optimizada para celulares).
+3. **Termómetro Social**: Visita sus perfiles de Instagram, TikTok y Facebook para extraer su conteo de seguidores, dando una idea de su alcance y tamaño de audiencia.
+4. **Entity Resolution (Deduplicación)**: Limpia la base de datos fusionando registros duplicados usando el teléfono y el dominio web como identificadores únicos.
+5. **Lead Scoring (Calificación)**: Clasifica la calidad del lead (Excelente, Rescatado, Débil) del 0 al 5 basándose en la completitud de sus datos y su huella web.
+
+---
+
+## 🚀 Cómo Probarlo (Prueba de Concepto)
+
+Instala las dependencias y corre la herramienta en tu propia terminal para ver la extracción en vivo.
+
+### 1. Instalación
 ```bash
-# Crear entorno virtual
+# Crear y activar entorno virtual
 python -m venv .venv
 source .venv/bin/activate
 
-# Instalar dependencias
+# Instalar dependencias del proyecto
 pip install -e .
 
-# Instalar navegadores de Playwright
+# Instalar los navegadores automatizados (Playwright)
 playwright install chromium
 ```
 
-## Uso
+### 2. Ejecutar una Extracción (CLI)
+Para ver la "magia" en vivo, te recomendamos correr la herramienta desactivando el modo "oculto" (headless) para que veas cómo el robot navega por las páginas.
 
 ```bash
-# Búsqueda básica (Monterrey)
-.venv/bin/python main.py run --query "restaurantes" --location "Monterrey" --max-results 20 --no-headless
+# Ejemplo: Buscar academias en Monterrey (abriendo el navegador visualmente)
+.venv/bin/python main.py run --query "academia" --location "Monterrey" --max-results 10 --no-headless
+```
+*Al terminar, los datos se guardarán automáticamente en la carpeta `/output` en formatos `.csv` y `.json`.*
 
-# Con más opciones
-.venv/bin/python main.py run \
-  --query "dentistas" \
-  --location "Monterrey" \
-  --max-results 10 \
-  --format json \
-  --output ./resultados
+### 3. Visualizar los Resultados (Dashboard Local)
+El proyecto incluye un dashboard web interactivo para analizar y filtrar los prospectos recolectados.
 
-# Modo headless (sin abrir navegador)
-.venv/bin/python main.py run --query "cafés" --location "Monterrey" --max-results 20
+```bash
+# Levantar el servidor local con auto-recarga
+.venv/bin/python main.py serve --reload
+```
+Abre **[http://localhost:8888](http://localhost:8888)** en tu navegador. 
+Allí podrás ver la tabla de resultados, hacer clic en cada prospecto para ver su diagnóstico completo, y filtrar rápidamente aquellos negocios que tienen una **"Web con problemas"**.
 
-# Abrir dashboard web para ver resultados
-.venv/bin/python main.py serve
-# Luego abre http://localhost:8888
+#### 🤖 Levantar el Worker de Tareas (Opcional para extracciones desde la Web)
+💡 **Novedad**: Los datos ahora se guardan en una **base de datos SQLite** (`output/encontreras.db`). Para poder lanzar extracciones directamente desde el Dashboard visual y que se procesen por debajo como colas de trabajo (Sidekiq-style), necesitas abrir una segunda terminal y prender el consumidor de Huey:
+
+```bash
+# En otra terminal (Terminal 2) con el entorno virtual activado
+.venv/bin/huey_consumer src.core.tasks.huey
 ```
 
-> **Nota:** Usa `.venv/bin/python` directamente en lugar de `source .venv/bin/activate` para evitar problemas de shell.
+---
 
-## Opciones del comando `run`
+## 🔮 Roadmap: Hacia el CRM Autónomo (Fase 2)
 
-| Opción | Alias | Default | Descripción |
-|---|---|---|---|
-| `--query` | `-q` | *requerido* | Tipo de negocio |
-| `--location` | `-l` | *requerido* | Ciudad/zona |
-| `--max-results` | `-n` | `20` | Máximo de resultados |
-| `--format` | `-f` | `both` | `csv`, `json`, o `both` |
-| `--output` | `-o` | `./output` | Directorio de salida |
-| `--headless` | | `true` | `--no-headless` para ver el navegador |
+El proyecto está diseñado en dos fases. La fase actual (Fase 1) recolecta la data y aplica reglas métricas básicas. La **Fase 2 (En Desarrollo)** evolucionará la herramienta hacia un motor de abstracción semántica profunda con IA:
 
-## Opciones del comando `serve`
+- **Anatomía de Audiencias**: Abstracción de métricas asimétricas (a quién siguen de vuelta, frecuencia de posts) para inferir madurez digital.
+- **Contexto y Rompehielos (LLMs)**: Integración con Inteligencia Artificial generativa para sintetizar los problemas encontrados (ej. página web sin optimizar + buen rating de maps) y auto-redactar el primer renglón del mensaje de venta (DM) hiper-personalizado.
+- **Sincronización Directa (Notion API)**: Exportación directa a un CRM de Notion ("Sniper List") sin necesidad de manipular archivos CSV.
 
-| Opción | Alias | Default | Descripción |
-|---|---|---|---|
-| `--output` | `-o` | `./output` | Directorio con los JSON |
-| `--port` | `-p` | `8888` | Puerto del servidor |
+---
 
-## Pipeline
+# English Version
 
-1. **Extracción** — Scrape de Google Maps (nombre, teléfono, web, dirección, rating)
-2. **Enriquecimiento Web** — Visita cada sitio web para extraer emails e Instagram/TikTok/Facebook
-3. **Enriquecimiento Social** — Visita perfiles sociales para obtener conteo de seguidores
-4. **Entity Resolution** — Deduplica usando teléfono y dominio como llaves primarias
-5. **Exportación** — Guarda resultados en CSV y/o JSON
+**Encontreras** is an Autonomous Agent (Proof of Concept) in Python designed for the extraction, enrichment, and semantic evaluation of B2B sales prospects.
 
-## Estructura
+## 🎯 Purpose: From Scraper to Intelligence Agent
 
+Most extraction tools are limited to downloading empty lists from Google Maps. **Encontreras** was built with an **Outbound Sales Intelligence** mindset. Its goal is to demonstrate how to *abstract valuable information and context* from a business's public digital footprint before making the first contact.
+
+Instead of just giving you a phone number, the agent profiles the prospect: Is their website optimized? Are they active on social media? Do they have good reviews but a poor digital presence? This information is gold for crafting highly personalized Cold DMs/Emails.
+
+---
+
+## ⚙️ How it Works (The Pipeline)
+
+The system operates as a cascading enrichment funnel:
+
+1. **Base Scraping (Google Maps)**: Extracts NAP (Name, Address, Phone), hours, category, price level, and reviews of businesses in a specific city.
+2. **Web Audit & Enrichment**: Automatically navigates to the business's website (if available). Extracts emails, finds real social media links, and **evaluates site health** (e.g., if the page is down, missing an H1 tag, or not mobile-optimized).
+3. **Social Thermometer**: Visits their Instagram, TikTok, and Facebook profiles to extract follower counts, providing a proxy for their reach and audience size.
+4. **Entity Resolution (Deduplication)**: Cleans the database by merging duplicate records using phone numbers and web domains as unique identifiers.
+5. **Lead Scoring**: Classifies lead quality (Excellent, Rescued, Weak) from 0 to 5 based on data completeness and their digital footprint.
+
+---
+
+## 🚀 How to Test It (Proof of Concept)
+
+Install the dependencies and run the agent in your own terminal to see the live extraction.
+
+### 1. Installation
+```bash
+# Create and activate virtual environment
+python -m venv .venv
+source .venv/bin/activate
+
+# Install project dependencies
+pip install -e .
+
+# Install automated browsers (Playwright)
+playwright install chromium
 ```
-encontreras/
-├── main.py                    # CLI (Typer)
-├── src/
-│   ├── pipeline.py            # Orquestación del pipeline
-│   ├── core/
-│   │   ├── config.py          # Configuración, selectores, regex
-│   │   ├── models.py          # Modelo de datos Business
-│   │   ├── entity_resolution.py  # Deduplicación
-│   │   └── exporter.py        # CSV/JSON export
-│   └── extractors/
-│       ├── google_maps.py     # Scraper de Google Maps
-│       ├── website.py         # Enricher de sitios web
-│       └── social.py          # Enricher de redes sociales
-└── pyproject.toml
+
+### 2. Run an Extraction (CLI)
+To see the "magic" live, we recommend running the tool with the "headless" mode disabled so you can watch the robot navigate the pages.
+
+```bash
+# Example: Search for dance academies in Monterrey (opening the browser visually)
+.venv/bin/python main.py run --query "academia" --location "Monterrey" --max-results 10 --no-headless
+```
+*Upon completion, data is automatically saved in the `/output` folder in `.csv` and `.json` formats.*
+
+### 3. View Results (Local Dashboard)
+The project includes an interactive web dashboard to analyze and filter the collected prospects.
+
+```bash
+# Start the local server with hot-reload
+.venv/bin/python main.py serve --reload
+```
+Open **[http://localhost:8888](http://localhost:8888)** in your browser. 
+There you can view the results table, click on each prospect for a full diagnostic, and quickly filter businesses that have a **"Website with issues"**.
+
+#### 🤖 Start the Background Worker (Optional for Web Extractions)
+💡 **New Feature**: Data is now persistently saved to a local **SQLite database** (`output/encontreras.db`). To trigger new background extractions directly from the Dashboard UI form via job queues (Sidekiq-style), open a second terminal and start the Huey consumer:
+
+```bash
+# In another terminal (Terminal 2) with the virtual environment activated
+.venv/bin/huey_consumer src.core.tasks.huey
 ```
 
-## Roadmap y Prueba de Concepto (PoC)
+---
 
-El proyecto está diseñado en dos fases, demostrando cómo se puede abstraer e inferir información de valor a partir de presencia digital pública.
+## 🔮 Roadmap: Towards the Autonomous CRM (Phase 2)
 
-### Fase 1: Extracción y Heurísticas Básicas (Actual)
-Prueba de concepto funcional orientada a la recolección de datos puros y evaluación heurística.
-- **Scraping Base**: Extracción de Google Maps (nombre, teléfono, ubicación, horarios, categoría).
-- **Enriquecimiento Digital**: Rastreo de sitios web para detectar emails, redes sociales e hipervínculos de contacto.
-- **Evaluación de Salud Web**: Análisis automatizado de status HTTP y SEO técnico básico (H1, Viewport móvil), útil para identificar *pain points* obvios.
-- **Lead Scoring Heurístico**: Algoritmos basados en palabras clave y completitud de datos (del 0 al 5) para separar negocios reales de listados vacíos o spam.
+The project is designed in two phases. The current phase (Phase 1) collects data and applies basic metric rules. **Phase 2 (In Development)** will evolve the tool into an AI-powered deep semantic abstraction engine:
 
-### Fase 2: Abstracción Profunda y Análisis Semántico (En Desarrollo)
-Evolución de la herramienta hacia un modelo de abstracción de datos avanzado, enfocado en medir el alcance real sin depender únicamente de métricas de vanidad.
-- **Anatomía de Audiencias**: Abstracción de métricas más profundas en redes sociales (seguidores, cuentas seguidas, frecuencia y tipo de interacción) para inferir la madurez digital del prospecto.
-- **Contexto de Negocio Inteligente**: Capacidades para entender no solo *qué* venden, sino a *quién* y *cómo* se posicionan, todo extraído implícitamente de sus rastros web y sociales.
-- **Resolución de Entidades Avanzada**: Fusión de presencias digitales parciales y fracturadas de una empresa utilizando indicadores asimétricos.
-- **Calificación Dinámica**: Transición de reglas duras a un modelo de *identificación de oportunidades* adaptable al nicho buscado (por ejemplo, detectar de manera automática que una página web mal estructurada pero con alto seguimiento social es un lead ideal para servicios de diseño web).
+- **Audience Anatomy**: Abstraction of asymmetrical metrics (followers vs following, post frequency) to infer digital maturity.
+- **Context & Icebreakers (LLMs)**: Integration with generative AI to synthesize the found issues (e.g., unoptimized website + good Maps rating) and auto-draft the highly personalized first line of the sales message (Cold DM).
+- **Direct Sync (Notion API)**: Direct export to a Notion CRM ("Sniper List") without the need to handle CSV files.
 
-## Licencia
-
-MIT
+---
+*Open Source / MIT License*
