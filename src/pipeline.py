@@ -120,6 +120,12 @@ async def run_pipeline(
 
     # ── Step 5: Export ────────────────────────────────────────────────────
     console.rule("[bold]Paso 5 · Exportación[/bold]")
+    
+    from src.core.database import save_to_db
+    db_path = str(Path(output_dir) / "encontreras.db")
+    save_to_db(df, db_path)
+    console.print(f"[green]✔ Base de datos actualizada (SQLite Upsert → {db_path})[/green]")
+
     if output_format in ("csv", "both"):
         to_csv(df, output_dir)
     if output_format in ("json", "both"):
