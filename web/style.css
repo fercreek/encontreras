@@ -84,6 +84,68 @@ body {
     letter-spacing: 0.03em;
 }
 
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.extract-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 6px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.extract-form input {
+    background: var(--bg-card);
+    border: 1px solid var(--border-hover);
+    color: var(--text-primary);
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-family: inherit;
+    outline: none;
+    transition: var(--transition);
+}
+
+.extract-form input:focus {
+    border-color: var(--accent-cyan);
+}
+
+.extract-form input[type="text"] {
+    width: 130px;
+}
+
+.extract-form input[type="number"] {
+    width: 60px;
+}
+
+#extract-btn {
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+#extract-btn:hover {
+    background: #2563eb;
+}
+
+#extract-btn:disabled {
+    background: var(--text-dim);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
 .file-label {
     font-size: 0.78rem;
     color: var(--text-dim);
@@ -465,6 +527,44 @@ tr {
     color: var(--text-dim);
     font-size: 0.75rem;
     border-top: 1px solid var(--border);
+}
+
+/* ── Status Banner (Background Huey Job) ── */
+.status-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--accent-cyan);
+    color: #000;
+    padding: 10px 20px;
+    margin: 15px 30px -10px 30px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.status-banner.hidden {
+    display: none !important;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* ── Responsive ─────────────────────────────────────────────── */

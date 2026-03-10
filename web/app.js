@@ -18,13 +18,135 @@ document.addEventListener("DOMContentLoaded", () => {
     setupSearch();
     setupFilters();
     setupModal();
+    setupExtractionForm();
+    checkStatus();
+    setInterval(() => {
+        pollData();
+        checkStatus();
+    }, 5000); // Check for new data and background job status every 5 seconds
 });
 
+// ── Background Job Status ────────────────────────────────────
+
+async function checkStatus() {
+    try {
+        const res = await fetch("/api/status");
+        if (res.ok) {
+            const data = await res.json();
+            const banner = document.getElementById("status-banner");
+            const msg = document.getElementById("status-message");
+            const btn = document.getElementById("extract-btn");
+            
+            if (data.running) {
+                msg.textContent = `Huey Worker activo: Extrayendo "${data.query}" en ${data.location}... (Los resultados aparecerán aquí al terminar)`;
+                banner.classList.remove("hidden");
+                
+                // Disable extract button while running
+                if (btn) {
+                    btn.disabled = true;
+                    btn.textContent = "Extrayendo...";
+                    btn.style.background = "var(--accent-cyan)";
+                    btn.style.color = "#000";
+                }
+            } else {
+                banner.classList.add("hidden");
+                
+                // Re-enable extract button
+                if (btn && btn.textContent === "Extrayendo...") {
+                    btn.disabled = false;
+                    btn.textContent = "Extraer";
+                    btn.style.background = "";
+                    btn.style.color = "";
+                }
+            }
+        }
+    } catch (e) {
+        // Fail silently during background polling
+    }
+}
+
+// ── Web UI Extraction Trigger ────────────────────────────────
+
+function setupExtractionForm() {
+    const form = document.getElementById("extract-form");
+    const btn = document.getElementById("extract-btn");
+    
+    if (!form) return;
+    
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const query = document.getElementById("extract-query").value.trim();
+        const location = document.getElementById("extract-location").value.trim();
+        const max_results = document.getElementById("extract-limit").value;
+        
+        if (!query || !location) return;
+        
+        const originalText = btn.textContent;
+        btn.textContent = "Lanzando...";
+        btn.disabled = true;
+        
+        try {
+            const res = await fetch("/api/run", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query, location, max_results: parseInt(max_results) })
+            });
+            
+            if (res.ok) {
+                // Instantly trigger checkStatus to show banner without waiting for the next 5s interval
+                setTimeout(checkStatus, 500);
+                form.reset();
+                document.getElementById("extract-limit").value = "10";
+            } else {
+                const errData = await res.json();
+                alert(`Error al lanzar extracción: ${errData.error}`);
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        } catch (error) {
+            alert(`Error de red: ${error.message}`);
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }
+    });
+}
+
 // ── Data Fetching ──────────────────────────────────────────────
+
+async function pollData() {
+    try {
+        const res = await fetch("/api/data");
+        const json = await res.json();
+        
+        if (json.businesses && json.businesses.length > 0) {
+            const newDataStr = JSON.stringify(json.businesses);
+            const oldDataStr = JSON.stringify(allData);
+            
+            // Only re-render if data has actually changed
+            if (newDataStr !== oldDataStr) {
+                allData = json.businesses;
+                applyFilters(); // Re-apply existing search/filters and render
+                document.getElementById("file-label").textContent = `📄 ${json.file} · ${json.count} registros`;
+                updateStats();
+            }
+        }
+    } catch (err) {
+        // Fail silently during background polling
+    }
+}
 
 async function fetchData() {
     try {
         const res = await fetch("/api/data");
+        
+        if (!res.ok) {
+            let errMsg = `Error del servidor (${res.status})`;
+            try { const errObj = await res.json(); errMsg = errObj.error || errMsg; } catch(e) {}
+            showEmpty(`Error: ${errMsg}. ¿Ejecutaste el CLI primero?`);
+            return;
+        }
+        
         const json = await res.json();
 
         if (json.businesses && json.businesses.length > 0) {
@@ -34,10 +156,10 @@ async function fetchData() {
             updateStats();
             renderTable();
         } else {
-            showEmpty("No se encontraron datos. Ejecuta el CLI primero.");
+            showEmpty("No se encontraron datos. Ejecuta una búsqueda desde aquí o el CLI.");
         }
     } catch (err) {
-        showEmpty("Error conectando al servidor. ¿Está corriendo?");
+        showEmpty("Error conectando al servidor. ¿Está corriendo el dashboard?");
     }
 }
 
@@ -143,8 +265,21 @@ function renderTable() {
         const emails = b.emails
             ? `<span class="email-text">${escapeHtml(b.emails)}</span>`
             : `<span class="dim">—</span>`;
+            
+        let webScoreHtml = "";
+        if (b.website && b.domain && b.site_status) {
+            let webScore = 1; // Default to 1 if it's dead
+            if (b.site_status === "OK") {
+                if (!b.site_issues || b.site_issues.length === 0) webScore = 5;
+                else if (b.site_issues.length === 1) webScore = 4;
+                else webScore = 3;
+            }
+            const colorVar = `var(--score-${webScore === 5 ? 5 : (webScore === 4 ? 4 : (webScore===3?3:1))})`;
+            webScoreHtml = `<span style="margin-left:6px; font-size:0.75rem; color:${colorVar}; padding: 2px 4px; border-radius:4px; background:rgba(255,255,255,0.05)" title="Calidad Web">★ ${webScore}</span>`;
+        }
+            
         const domain = b.domain
-            ? `<a class="domain-link" href="${escapeHtml(b.website)}" target="_blank">${escapeHtml(b.domain)}</a>`
+            ? `<div style="display:flex; align-items:center;"><a class="domain-link" href="${escapeHtml(b.website)}" target="_blank">${escapeHtml(b.domain)}</a>${webScoreHtml}</div>`
             : `<span class="dim">—</span>`;
         const rating = b.rating
             ? `<span class="rating-value">★ ${b.rating}</span>`
@@ -166,9 +301,9 @@ function renderTable() {
 
 function buildSocialDots(b) {
     const dots = [];
-    if (b.instagram) dots.push(`<span class="social-dot social-ig" title="Instagram">IG</span>`);
-    if (b.tiktok) dots.push(`<span class="social-dot social-tk" title="TikTok">TK</span>`);
-    if (b.facebook) dots.push(`<span class="social-dot social-fb" title="Facebook">FB</span>`);
+    if (b.instagram) dots.push(`<a class="social-dot social-ig" style="text-decoration:none;" title="Instagram" href="${escapeHtml(b.instagram)}" target="_blank">IG</a>`);
+    if (b.tiktok) dots.push(`<a class="social-dot social-tk" style="text-decoration:none;" title="TikTok" href="${escapeHtml(b.tiktok)}" target="_blank">TK</a>`);
+    if (b.facebook) dots.push(`<a class="social-dot social-fb" style="text-decoration:none;" title="Facebook" href="${escapeHtml(b.facebook)}" target="_blank">FB</a>`);
     return dots.length > 0
         ? `<div class="social-icons">${dots.join("")}</div>`
         : `<span class="dim">—</span>`;
@@ -176,9 +311,12 @@ function buildSocialDots(b) {
 
 function buildFollowers(b) {
     const parts = [];
-    if (b.ig_followers) parts.push(`IG: ${b.ig_followers}`);
-    if (b.tiktok_followers) parts.push(`TK: ${b.tiktok_followers}`);
-    if (b.fb_followers) parts.push(`FB: ${b.fb_followers}`);
+    const isValid = (f) => f && f.toString().trim() !== "" && f.toString().trim() !== "." && f.toString().trim() !== "-";
+    
+    if (isValid(b.ig_followers)) parts.push(`IG: ${escapeHtml(b.ig_followers)}`);
+    if (isValid(b.tiktok_followers)) parts.push(`TK: ${escapeHtml(b.tiktok_followers)}`);
+    if (isValid(b.fb_followers)) parts.push(`FB: ${escapeHtml(b.fb_followers)}`);
+    
     return parts.length > 0
         ? `<span class="email-text">${parts.join(" · ")}</span>`
         : `<span class="dim">—</span>`;
@@ -222,22 +360,22 @@ function showDetail(index) {
     }
 
     const fields = [
-        ["Score", `<span class="score-badge score-${score}" style="display:inline-flex">${score}</span> ${b.quality_label || "—"}`],
-        ["Categoría", b.category || "—"],
+        ["Score", `<span class="score-badge score-${score}" style="display:inline-flex">${score}</span> ${escapeHtml(b.quality_label) || "—"}`],
+        ["Categoría", escapeHtml(b.category) || "—"],
         ["Descripción", b.description ? `<em style="color:var(--text-secondary)">"${escapeHtml(b.description)}"</em>` : "—"],
-        ["Teléfono", b.phone || "—"],
-        ["Dirección", b.address || "—"],
-        ["Horarios", b.hours || "—"],
+        ["Teléfono", escapeHtml(b.phone) || "—"],
+        ["Dirección", escapeHtml(b.address) || "—"],
+        ["Horarios", escapeHtml(b.hours) || "—"],
         ["Website", b.website ? `<a href="${escapeHtml(b.website)}" target="_blank">${escapeHtml(b.domain)}</a>` : "—"],
         ["Salud Web (Oportunidad)", webHealth],
-        ["Rating", b.rating ? `★ ${b.rating} (${b.reviews_count || 0} reseñas) ${b.price_level ? '· ' + b.price_level : ''}` : "—"],
-        ["Emails", b.emails || "—"],
+        ["Rating", b.rating ? `★ ${escapeHtml(String(b.rating))} (${escapeHtml(String(b.reviews_count || 0))} reseñas) ${b.price_level ? '· ' + escapeHtml(b.price_level) : ''}` : "—"],
+        ["Emails", escapeHtml(b.emails) || "—"],
         ["Instagram", b.instagram ? `<a href="${escapeHtml(b.instagram)}" target="_blank">${escapeHtml(b.instagram)}</a>` : "—"],
         ["TikTok", b.tiktok ? `<a href="${escapeHtml(b.tiktok)}" target="_blank">${escapeHtml(b.tiktok)}</a>` : "—"],
         ["Facebook", b.facebook ? `<a href="${escapeHtml(b.facebook)}" target="_blank">${escapeHtml(b.facebook)}</a>` : "—"],
-        ["Seguidores IG", b.ig_followers || "—"],
-        ["Seguidores TK", b.tiktok_followers || "—"],
-        ["Seguidores FB", b.fb_followers || "—"],
+        ["Seguidores IG", escapeHtml(b.ig_followers) || "—"],
+        ["Seguidores TK", escapeHtml(b.tiktok_followers) || "—"],
+        ["Seguidores FB", escapeHtml(b.fb_followers) || "—"],
         ["Google Maps", b.maps_url ? `<a href="${escapeHtml(b.maps_url)}" target="_blank">Abrir ficha Maps ↗</a>` : "—"]
     ];
 
@@ -271,7 +409,7 @@ function showEmpty(msg) {
 }
 
 function escapeHtml(str) {
-    if (!str) return "";
-    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    if (str === null || str === undefined) return "";
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;")
         .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
