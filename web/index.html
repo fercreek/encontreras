@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>encontreras — Dashboard</title>
+    <meta name="description" content="Dashboard para visualizar negocios extraídos por encontreras">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <h1 class="logo">🔍 encontreras</h1>
+            <span class="badge">Fase 1 · MVP</span>
+        </div>
+        <div class="header-right">
+            <span class="file-label" id="file-label">Sin datos</span>
+        </div>
+    </header>
+
+    <!-- Stats Cards -->
+    <section class="stats-grid" id="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number" id="stat-total">—</div>
+            <div class="stat-label">Total Negocios</div>
+        </div>
+        <div class="stat-card stat-excellent">
+            <div class="stat-number" id="stat-excellent">—</div>
+            <div class="stat-label">⭐ Excelente (5)</div>
+        </div>
+        <div class="stat-card stat-good">
+            <div class="stat-number" id="stat-good">—</div>
+            <div class="stat-label">✔ Bueno (4)</div>
+        </div>
+        <div class="stat-card stat-rescued">
+            <div class="stat-number" id="stat-rescued">—</div>
+            <div class="stat-label">🔄 Rescatado (3)</div>
+        </div>
+        <div class="stat-card stat-weak">
+            <div class="stat-number" id="stat-weak">—</div>
+            <div class="stat-label">⚠ Débil (1-2)</div>
+        </div>
+        <div class="stat-card stat-spam">
+            <div class="stat-number" id="stat-spam">—</div>
+            <div class="stat-label">🚫 Spam (0)</div>
+        </div>
+    </section>
+
+    <!-- Filters -->
+    <section class="filters-bar">
+        <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+            </svg>
+            <input type="text" id="search-input" placeholder="Buscar por nombre, teléfono, email…">
+        </div>
+        <div class="filter-buttons" id="filter-buttons">
+            <button class="filter-btn active" data-filter="all">Todos</button>
+            <button class="filter-btn" data-filter="5">⭐ 5</button>
+            <button class="filter-btn" data-filter="4">4</button>
+            <button class="filter-btn" data-filter="3">3</button>
+            <button class="filter-btn" data-filter="2">2</button>
+            <button class="filter-btn" data-filter="1">1</button>
+            <button class="filter-btn" data-filter="0">0</button>
+            <button class="filter-btn" data-filter="has-email">📧 Con Email</button>
+            <button class="filter-btn" data-filter="has-social">📱 Con Redes</button>
+            <button class="filter-btn" data-filter="web-issues">⚠ Web con Problemas</button>
+        </div>
+    </section>
+
+    <!-- Data Table -->
+    <section class="table-container">
+        <div class="table-wrapper">
+            <table id="data-table">
+                <thead>
+                    <tr>
+                        <th class="th-score">Score</th>
+                        <th class="th-name">Nombre</th>
+                        <th class="th-phone">Teléfono</th>
+                        <th class="th-web">Web</th>
+                        <th class="th-emails">Emails</th>
+                        <th class="th-social">Redes</th>
+                        <th class="th-followers">Seguidores</th>
+                        <th class="th-rating">Rating</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr>
+                        <td colspan="8" class="empty-state">
+                            <div class="empty-icon">📭</div>
+                            <div>Cargando datos…</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Detail Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal" id="modal">
+            <button class="modal-close" id="modal-close">✕</button>
+            <div class="modal-content" id="modal-content"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>encontreras · Open Source MVP · Fase 1</span>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
