@@ -170,86 +170,73 @@
     <main class="landing-container">
         <div class="landing-header">
             <h1>De Scraper a Agente Autónomo</h1>
-            <p>Conoce la arquitectura detrás de Encontreras y cómo usa Playwright y LLMs para revolucionar el Outbound B2B.</p>
+            <p>Un proyecto educativo (Open Source) para aprender cómo funcionan los Agentes de IA y cómo usarlos para automatizar tareas aburridas desde tu propia computadora.</p>
         </div>
 
         <section class="section">
-            <h2>🚨 El Problema del Scraping Tradicional</h2>
-            <p>La mayoría de los vendedores B2B compran bases de datos frías o usan extractores genéricos. El resultado es siempre el mismo: una tabla de Excel con miles de nombres y teléfonos que nadie contesta.</p>
-            <p><strong>Encontreras piensa diferente.</strong> No queremos un millón de teléfonos inútiles. Queremos 50 prospectos de alta calidad, con contexto real de su negocio, sabiendo exactamente dónde les duele (¿su web está caída? ¿nadie los sigue en redes?). Ese contexto es la diferencia entre un vendedor pesado y un consultor valioso.</p>
+            <h2>🎯 Propósito: Democratizando la Extracción de Datos</h2>
+            <p><strong>Encontreras no es un producto comercial.</strong> Es una herramienta educativa y de código abierto pensada para cualquiera (incluso si no sabes programar) que quiera obtener datos de internet sin pagar suscripciones caras ni depender de la nube.</p>
+            <p>¿Qué problema resuelve? Normalmente, para armar una base de prospectos B2B o recolectar información de negocios, la gente pasa horas copiando y pegando de Google Maps, o compra bases de datos desactualizadas. <strong>Encontreras automatiza esto.</strong> Lo bajas a tu computadora, lo corres localmente, y obtienes los datos limpios en un archivo <strong>CSV</strong> (Excel) o sincronizados mágicamente en tu <strong>Notion</strong>.</p>
         </section>
 
         <section class="section">
-            <h2>⚙️ La Arquitectura (Pipeline)</h2>
-            <p>El código corre localmente en tu máquina como una tubería en cascada:</p>
+            <h2>⚙️ La Arquitectura (Cómo se construyó)</h2>
+            <p>El código corre 100% en tu máquina. Nada de servidores externos leyendo tus API keys. El flujo funciona como una tubería en cascada:</p>
             
             <div class="pipeline-diagram">
                 <div class="step">
                     <div class="step-icon">🗺️</div>
                     <div class="step-content">
-                        <h3>1. Extracción Base (Google Maps)</h3>
-                        <p>Usamos un navegador invisible para buscar en Maps, controlando la página como un humano. Extraemos el NAP (Name, Address, Phone), rating y links.</p>
-                        <div class="tech-tags"><span class="tech-tag">Playwright</span><span class="tech-tag">BeautifulSoup</span></div>
+                        <h3>1. Extracción (Google Maps)</h3>
+                        <p>Usamos un navegador invisible controlado por código que busca en Maps como lo haría un humano, extrayendo nombres, teléfonos y áreas.</p>
+                        <div class="tech-tags"><span class="tech-tag">Playwright</span><span class="tech-tag">HTML Parsing</span></div>
                     </div>
                 </div>
 
                 <div class="step">
                     <div class="step-icon">🕵️‍♂️</div>
                     <div class="step-content">
-                        <h3>2. Auditoría Web</h3>
-                        <p>Por cada prospecto, visitamos su sitio web. Buscamos emails directos, redes sociales reales (evitando links a share/wix) y medimos la salud técnica de su HTML.</p>
-                        <div class="tech-tags"><span class="tech-tag">RegEx</span><span class="tech-tag">HTTP Sessions</span></div>
+                        <h3>2. Enriquecimiento Web</h3>
+                        <p>El agente visita la página de cada negocio. Busca correos electrónicos, comprueba si tienen redes sociales y verifica si la página funciona correctamente.</p>
+                        <div class="tech-tags"><span class="tech-tag">RegEx</span><span class="tech-tag">Navegación Autónoma</span></div>
                     </div>
                 </div>
 
                 <div class="step">
-                    <div class="step-icon">📊</div>
                     <div class="step-content">
-                        <h3>3. Lead Scoring & Deduplicación</h3>
-                        <p>Limpiamos la basura. Si dos negocios comparten teléfono o dominio, los unimos. Luego les damos un Score (0-5). A los que no tienen teléfono ni web los devaluamos.</p>
-                        <div class="tech-tags"><span class="tech-tag">SQLite UPSERT</span><span class="tech-tag">Heuristics</span></div>
+                        <h3>3. Procesamiento y Limpieza</h3>
+                        <p>Limpiamos la basura. Si dos negocios comparten teléfono o web, los unimos. Los calificamos del 0 al 5 para que solo te enfoques en los que valen la pena.</p>
+                        <div class="tech-tags"><span class="tech-tag">SQLite</span><span class="tech-tag">Heurística Local</span></div>
                     </div>
                 </div>
 
                 <div class="step">
                     <div class="step-icon">🧠</div>
                     <div class="step-content">
-                        <h3>4. Síntesis IA (Gemini Flash)</h3>
-                        <p>Mandamos todo el JSON al modelo fundacional. Le pedimos que actúe como un estratega B2B, analice las debilidades y redacte 3 rompehielos ultra-personalizados.</p>
-                        <div class="tech-tags"><span class="tech-tag">Google GenAI SDK</span><span class="tech-tag">Prompt Engineering</span></div>
+                        <h3>4. Inteligencia Artificial (Prompting)</h3>
+                        <p>Conectamos los datos recopilados con el cerebro de Google (Gemini) usando tu propia llave gratuita. Le pedimos a la IA que redacte 3 opciones de mensajes (rompehielos) personalizados basados en lo que encontró.</p>
+                        <div class="tech-tags"><span class="tech-tag">Google GenAI</span><span class="tech-tag">Prompt Engineering</span></div>
                     </div>
                 </div>
 
                 <div class="step">
                     <div class="step-icon">📓</div>
                     <div class="step-content">
-                        <h3>5. Exportación a CRM (Notion API)</h3>
-                        <p>Finalmente, los leads cualificados y analizados por la IA son enviados directamente a tu base de datos de Notion (Sniper List), listos para que los contactes.</p>
-                        <div class="tech-tags"><span class="tech-tag">Notion SDK</span><span class="tech-tag">REST API</span></div>
+                        <h3>5. Tu Base de Datos (CSV & Notion)</h3>
+                        <p>Todo el trabajo duro se condensa en un archivo Excel local. Además, mediante una simple conexión, mandamos los elegidos a una tabla en Notion para que lleves seguimiento.</p>
+                        <div class="tech-tags"><span class="tech-tag">Notion SDK</span><span class="tech-tag">Archivos Locales</span></div>
                     </div>
                 </div>
             </div>
         </section>
 
         <section class="section">
-            <h2>🛠️ ¿Por qué construirlo así?</h2>
-            
-            <p><strong>¿Por qué Playwright y no Requests/BeautifulSoup solos?</strong><br>
-            Google Maps renderiza toda su data dinámicamente con JavaScript. Una simple petición HTTP devuelve una página en blanco. Playwright levanta un Chromium real que ejecuta JS y engaña los métodos anti-scraping simulando <em>scrolls</em> y <em>clicks</em>.</p>
-            
-            <p><strong>¿Por qué SQLite?</strong><br>
-            Almacenar en JSON está bien para 10 registros, pero cuando pasas de 500, necesitas un motor de BD real para deduplicar eficientemente con <code>UPSERT (ON CONFLICT DO UPDATE)</code> y para servir la API del Dashboard en tiempo real a alta velocidad.</p>
-
-            <p><strong>¿Por qué procesar en background (Worker / Huey)?</strong><br>
-            Ir a Google Maps, entrar a 10 páginas web, navegar por Instagram y consultar a una IA toma mucho **tiempo IO**. Si lo hiciéramos bloqueando el servidor HTTP, el Dashboard tardaría 3 minutos en cargar una página web. Huey procesa todo asíncronamente en segundo plano, manteniendo el UI fluido.</p>
-        </section>
-
-        <section class="section">
-            <h2>💡 ¿Qué puedes vender con estos datos?</h2>
+            <h2>💡 ¿Qué puedes hacer con esto? (Casos Prácticos)</h2>
+            <p>Como Encontreras guarda todo en planillas o en Notion, puedes aprovecharlo de varias formas:</p>
             <ul>
-                <li><strong>Agencia SEO</strong>: Filtra los negocios con <code>Web con Problemas</code>. Mándales el DM "Directo" diciendo que su página está caída.</li>
-                <li><strong>Agencia de Redes Sociales</strong>: Busca negocios con 5 estrellas en Maps, pero con 0 seguidores en Instagram. Escríbeles el DM "Halago" destacando que su excelente servicio en persona no se refleja en digital.</li>
-                <li><strong>Venta de Software (SaaS)</strong>: Analiza los horarios de miles de clínicas y véndeles un sistema de reservas si ves que no tienen botón de agendar en su web.</li>
+                <li><strong>Prospección B2B:</strong> Exportar los negocios a tu CRM y usar los mensajes "Rompehielos" creados por la IA para contactarlos por correo o WhatsApp.</li>
+                <li><strong>Auditorías Express:</strong> Descargar la lista de Excel de clínicas en tu ciudad y ver rápidamente cuáles no tienen página web o redes sociales, para ofrecerles tus servicios.</li>
+                <li><strong>El Futuro con Notion:</strong> Tener todos los leads en Notion te permite usar fórmulas avanzadas, crear tableros Kanban de seguimiento de ventas, o conectar Notion a herramientas de mailing automatizado.</li>
             </ul>
         </section>
     </main>
