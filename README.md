@@ -53,11 +53,27 @@ Google Maps → Web Audit → Social Check → Dedup → Score → IA → Notion
 
 ---
 
-## ⚡ Quickstart (5 minutos)
+## 🤖 Para No Programadores (Uso con 1-Clic)
 
-### Opción A: Con Make (recomendado)
+Si no sabes programar y no quieres lidiar con comandos en la terminal, no te preocupes. Hemos preparado instaladores de un solo clic que descargan lo necesario, prenden la terminal detrás de escenas y abren la página web automáticamente.
+
+Solo asegúrate de **[Descargar e instalar Python 3.10+](https://www.python.org/downloads/)** primero (en Windows, marca la casilla *"Add python.exe to PATH"* durante la instalación).
+
+Luego:
+1. Descarga este repositorio usando el botón verde **"Code" -> "Download ZIP"** arriba a la derecha.
+2. Descomprime la carpeta.
+3. Haz **doble clic** en:
+   - 🍎 **`start.command`** (Si estás en Mac o Linux)
+   - 🪟 **`start.bat`** (Si estás en Windows)
+4. ¡Listo! Espera un minuto a que la pantalla negra descargue los navegadores invisibles (solo la primera vez). Cuando acabe, tu navegador se abrirá mostrando `http://localhost:8888`.
+
+---
+
+## ⚡ Quickstart para Desarrolladores (Terminal)
+
+### Opción A: Con Make (recomendado para Unix)
 ```bash
-git clone https://github.com/tuusuario/encontreras.git
+git clone https://github.com/fercreek/encontreras.git
 cd encontreras
 make install    # Crea venv, instala deps y Chromium
 make serve      # Dashboard en http://localhost:8888
