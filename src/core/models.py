@@ -43,7 +43,15 @@ class Business:
 
     # ── Enrichment: social media ──────────────────────────────────────────
     ig_followers: str | None = None
-    tiktok_followers: str | None = None
+    tiktok_followers: int | None = None
+    
+    # LLM Synthesis
+    context: str | None = None
+    why_they_matter: str | None = None
+    icebreaker: str | None = None
+    
+    # Integration
+    notion_url: str | None = None
     fb_followers: str | None = None
 
     def __post_init__(self) -> None:
@@ -96,6 +104,10 @@ class Business:
             "site_issues": ", ".join(self.site_issues) if self.site_issues else None,
             "ig_followers": self.ig_followers,
             "tiktok_followers": self.tiktok_followers,
+            "context": self.context,
+            "why_they_matter": self.why_they_matter,
+            "icebreaker": self.icebreaker,
+            "notion_url": self.notion_url,
             "fb_followers": self.fb_followers,
             "score": self.score if self.score >= 0 else None,
             "quality_label": self.quality_label,

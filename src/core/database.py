@@ -44,6 +44,10 @@ def init_db(db_path: str = "./output/encontreras.db") -> None:
             ig_followers TEXT,
             tiktok_followers TEXT,
             fb_followers TEXT,
+            context TEXT,
+            why_they_matter TEXT,
+            icebreaker TEXT,
+            notion_url TEXT,
             inserted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
@@ -67,7 +71,8 @@ def save_to_db(df: pd.DataFrame, db_path: str = "./output/encontreras.db") -> No
         "name", "phone", "website", "domain", "address", "rating", "reviews_count",
         "category", "hours", "description", "price_level", "maps_url", "plus_code",
         "emails", "instagram", "tiktok", "facebook", "site_status", "site_issues",
-        "score", "quality_label", "ig_followers", "tiktok_followers", "fb_followers"
+        "score", "quality_label", "ig_followers", "tiktok_followers", "fb_followers",
+        "context", "why_they_matter", "icebreaker", "notion_url"
     ]
     
     for _, row in df.iterrows():
