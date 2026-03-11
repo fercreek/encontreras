@@ -31,3 +31,8 @@ output/
 # Environment
 .env
 .env.local
+
+# Local state (Huey, pytest)
+.pytest_cache/
+output/huey_queue.db*
+output/running_status.json

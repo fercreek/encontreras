@@ -1,240 +1,276 @@
-# encontreras 🎯 | Autonomous Outbound Agent
+# encontreras 🎯 | Consigue Leads B2B Sin Complicaciones
 
-*[English version below](#english-version)*
+<p align="center">
+  <img src="web/favicon.png" alt="encontreras logo" width="120">
+</p>
 
-**Encontreras** es un Agente Autónomo (PoC) en Python diseñado para la extracción, enriquecimiento y evaluación semántica de prospectos comerciales (B2B Lead Generation). 
+<p align="center">
+  <strong>Agente autónomo que extrae, enriquece y califica prospectos de Google Maps con IA.</strong><br>
+  <em>100% local, 100% gratis, 0 dependencias en la nube.</em>
+</p>
 
-## 🎯 Finalidad: De un Scraper a un Agente de Inteligencia
-
-La mayoría de las herramientas de extracción se limitan a descargar listas vacías de Google Maps. **Encontreras** fue diseñado con una mentalidad de **Inteligencia de Ventas (Outbound)**. Su objetivo es demostrar cómo se puede *abstraer información de valor y contexto* a partir de la huella digital pública de un negocio, antes de realizar el primer contacto.
-
-En lugar de solo darte un teléfono, la herramienta perfila al prospecto: ¿Su página web está optimizada? ¿Están activos en redes sociales? ¿Tienen buenas reseñas pero mala presencia digital? Esta información es oro para redactar mensajes en frío (Cold DMs/Emails) sumamente personalizados.
-
----
-
-## ⚙️ ¿Cómo Funciona? (El Pipeline)
-
-El sistema opera como un embudo de enriquecimiento en cascada:
-
-1. **Scraping Base (Google Maps)**: Extrae el NAP (Name, Address, Phone), horarios, categoría, nivel de precios y reseñas de los negocios en una ciudad específica.
-2. **Auditoría y Enriquecimiento Web**: Navega automáticamente a la página web del negocio (si tiene). Extrae correos electrónicos, encuentra sus redes sociales reales y **evalúa la salud del sitio** (ej. si la página está caída, si le falta la etiqueta H1 o si no está optimizada para celulares).
-3. **Termómetro Social**: Visita sus perfiles de Instagram, TikTok y Facebook para extraer su conteo de seguidores, dando una idea de su alcance y tamaño de audiencia.
-4. **Entity Resolution (Deduplicación)**: Limpia la base de datos fusionando registros duplicados usando el teléfono y el dominio web como identificadores únicos.
-5. **Lead Scoring (Calificación)**: Clasifica la calidad del lead (Excelente, Rescatado, Débil) del 0 al 5 basándose en la completitud de sus datos y su huella web.
+<p align="center">
+  <a href="#cómo-funciona-el-pipeline">¿Cómo funciona?</a> ·
+  <a href="#-quickstart-5-minutos">Quickstart</a> ·
+  <a href="#-fase-2-inteligencia-artificial--notion">IA & Notion</a> ·
+  <a href="#english-version">English</a>
+</p>
 
 ---
 
-## 🚀 Cómo Probarlo (Prueba de Concepto)
+## ¿Para qué sirve?
 
-Instala las dependencias y corre la herramienta en tu propia terminal para ver la extracción en vivo.
+La mayoría de las herramientas de scraping te dan una lista vacía de teléfonos. **Encontreras** va más allá: perfila al prospecto analizando su huella digital (web, redes, reseñas) y usa **Inteligencia Artificial** para redactarte un mensaje de apertura personalizado.
 
-### 1. Instalación
+**Ideal para**: freelancers, agencias de marketing digital, consultores, o cualquiera que quiera conseguir clientes B2B de forma orgánica sin pagar herramientas caras.
+
+---
+
+## ¿Cómo Funciona? (El Pipeline)
+
+```
+Google Maps → Web Audit → Social Check → Dedup → Score → IA → Notion
+```
+
+1. **Scraping (Google Maps)**: Extrae nombre, teléfono, dirección, horarios, categoría, reseñas y nivel de precio.
+2. **Auditoría Web**: Navega automáticamente al sitio del negocio. Extrae emails, encuentra redes sociales, y evalúa la salud del sitio (¿está caída? ¿falta el H1? ¿no es mobile-friendly?).
+3. **Termómetro Social**: Visita Instagram, TikTok y Facebook para extraer conteo de seguidores.
+4. **Deduplicación**: Fusiona duplicados usando teléfono y dominio web como llaves únicas.
+5. **Lead Scoring**: Califica de 0 (spam) a 5 (excelente) según completitud de datos y presencia digital.
+6. **Síntesis IA** *(opcional)*: Gemini Flash analiza cada lead y genera un contexto, análisis y DM personalizado.
+7. **Notion Sync** *(opcional)*: Exporta los leads listos a tu CRM en Notion.
+
+---
+
+## 📋 Requisitos
+
+- **Python** 3.10+ ([descargar](https://www.python.org/downloads/))
+- **Git** ([descargar](https://git-scm.com/downloads))
+- **macOS, Linux o WSL** (Windows via WSL)
+- ~500 MB de espacio (para Playwright/Chromium)
+
+---
+
+## ⚡ Quickstart (5 minutos)
+
+### Opción A: Con Make (recomendado)
 ```bash
-# Crear y activar entorno virtual
-python -m venv .venv
+git clone https://github.com/tuusuario/encontreras.git
+cd encontreras
+make install    # Crea venv, instala deps y Chromium
+make serve      # Dashboard en http://localhost:8888
+```
+
+En otra terminal:
+```bash
+make worker     # Levanta el worker de tareas
+```
+
+Ahora puedes buscar leads desde el Dashboard o desde la terminal:
+```bash
+make run q="dentistas" l="Monterrey"
+```
+
+### Opción B: Manual
+```bash
+git clone https://github.com/tuusuario/encontreras.git
+cd encontreras
+python3 -m venv .venv
 source .venv/bin/activate
-
-# Instalar dependencias del proyecto
 pip install -e .
-
-# Instalar los navegadores automatizados (Playwright)
 playwright install chromium
+
+# Extraer leads
+python main.py run --query "dentistas" --location "Monterrey" --max-results 10
+
+# Ver resultados
+python main.py serve --reload
 ```
 
-### 2. Ejecutar una Extracción (CLI)
-Para ver la "magia" en vivo, te recomendamos correr la herramienta desactivando el modo "oculto" (headless) para que veas cómo el robot navega por las páginas.
-
+### 🤖 Uso desde el Dashboard
+El Dashboard web te permite lanzar extracciones directamente desde el formulario visual. Solo necesitas tener el **worker** corriendo en otra terminal:
 ```bash
-# Ejemplo: Buscar academias en Monterrey (abriendo el navegador visualmente)
-.venv/bin/python main.py run --query "academia" --location "Monterrey" --max-results 10 --no-headless
-```
-*Al terminar, los datos se guardarán automáticamente en la carpeta `/output` en formatos `.csv` y `.json`.*
-
-### 3. Visualizar los Resultados (Dashboard Local)
-El proyecto incluye un dashboard web interactivo para analizar y filtrar los prospectos recolectados.
-
-```bash
-# Levantar el servidor local con auto-recarga
-.venv/bin/python main.py serve --reload
-```
-Abre **[http://localhost:8888](http://localhost:8888)** en tu navegador. 
-Allí podrás ver la tabla de resultados, hacer clic en cada prospecto para ver su diagnóstico completo, y filtrar rápidamente aquellos negocios que tienen una **"Web con problemas"**.
-
-#### 🤖 Levantar el Worker de Tareas (Opcional para extracciones desde la Web)
-💡 **Novedad**: Los datos ahora se guardan en una **base de datos SQLite** (`output/encontreras.db`). Para poder lanzar extracciones directamente desde el Dashboard visual y que se procesen por debajo como colas de trabajo (Sidekiq-style), necesitas abrir una segunda terminal y prender el consumidor de Huey:
-
-```bash
-# En otra terminal (Terminal 2) con el entorno virtual activado
-.venv/bin/huey_consumer src.core.tasks.huey
+make worker
+# o: .venv/bin/huey_consumer src.core.tasks.huey
 ```
 
 ---
 
-## 🧠 Fase 2: Inteligencia Artificial & Notion (Implementado)
+## 🧠 Fase 2: Inteligencia Artificial & Notion
 
-### 4. Configurar Variables de Entorno
+### Configurar Variables de Entorno
 
 ```bash
 cp .env.example .env
 ```
 
-Abre `.env` con tu editor y pega las 3 llaves que obtendrás a continuación:
+Abre `.env` y pega tus llaves:
 
 #### 🔑 `GEMINI_API_KEY` — Google AI Studio (Gratis)
 1. Ve a **[aistudio.google.com/apikey](https://aistudio.google.com/apikey)**
 2. Inicia sesión con tu cuenta de Google
-3. Clic en **"Create API Key"** → selecciona un proyecto (o crea uno)
+3. Clic en **"Create API Key"** → selecciona o crea un proyecto
 4. Copia la llave (empieza con `AIza...`)
 
-> 💡 El tier gratuito de Gemini Flash incluye ~15 requests/min y ~1M tokens/día.
+> 💡 El tier gratuito incluye ~15 requests/min y ~1M tokens/día. Más que suficiente.
 
-#### 🔑 `NOTION_TOKEN` — Integración de Notion
+#### 🔑 `NOTION_TOKEN` — Integración de Notion *(opcional)*
 1. Ve a **[notion.so/profile/integrations](https://www.notion.so/profile/integrations)**
-2. Clic en **"+ Nueva integración"** → nómbrala `encontreras-sync`
-3. Asegúrate de que tenga permisos de **Leer**, **Insertar** y **Actualizar contenido**
-4. Copia el **Internal Integration Secret** (empieza con `ntn_...`)
-5. ⚠️ **Paso extra**: Abre tu base de datos Sniper List en Notion → `•••` → **Conexiones** → **Conectar a** → `encontreras-sync`
+2. Crea una nueva integración llamada `encontreras-sync`
+3. Dale permisos de **Leer**, **Insertar** y **Actualizar contenido**
+4. Copia el Secret (empieza con `ntn_...`)
+5. ⚠️ Conecta la integración a tu base de datos: `•••` → **Conexiones** → `encontreras-sync`
 
-#### 🔑 `NOTION_DATABASE_ID` — El ID de tu Sniper List
-1. Abre tu base de datos "Sniper List" en el **navegador**
-2. Copia la URL, que se ve así:
-   ```
-   https://www.notion.so/tu-workspace/abc123def456...?v=xyz
-                                       ^^^^^^^^^^^^^^^^
-                                       ESTE es tu Database ID
-   ```
-3. El ID es la cadena de 32 caracteres **después del último `/`** y **antes del `?`**
+#### 🔑 `NOTION_DATABASE_ID` — ID de tu base de datos
+1. Abre tu base de datos en Notion **en el navegador**
+2. El ID es la cadena de 32 caracteres en la URL entre el último `/` y el `?`
 
-### 5. Analizar Prospectos con IA (Gemini Flash)
-Ejecuta la IA sobre los prospectos con Score ≥ 3 para generar contexto, análisis y un DM personalizado:
+### Ejecutar la IA
 ```bash
-.venv/bin/python main.py synthesize
+make synthesize     # Gemini analiza leads con Score ≥ 3
+make notion-sync    # Sube los analizados a Notion
 ```
 
-### 6. Sincronizar a Notion (Sniper List)
-Envía los prospectos ya analizados a tu base de datos de Notion:
-```bash
-.venv/bin/python main.py notion-sync
+---
+
+## 🗂️ Estructura del Proyecto
+
 ```
+encontreras/
+├── main.py                    # CLI principal (Typer)
+├── Makefile                   # Atajos: make run, make serve, etc.
+├── pyproject.toml             # Dependencias Python
+├── .env.example               # Template de variables de entorno
+│
+├── src/
+│   ├── pipeline.py            # Orquestador del flujo completo
+│   ├── core/
+│   │   ├── config.py          # Constantes, regex, blacklists
+│   │   ├── models.py          # Dataclass Business
+│   │   ├── database.py        # SQLite init + UPSERT
+│   │   ├── entity_resolution.py
+│   │   ├── lead_scorer.py     # Score heurístico 0-5
+│   │   ├── ai_synthesis.py    # Gemini Flash prompts
+│   │   ├── notion_sync.py     # Push a Notion API
+│   │   ├── tasks.py           # Cola de tareas Huey
+│   │   └── exporter.py        # CSV/JSON export
+│   └── extractors/
+│       ├── google_maps.py     # Playwright scraper
+│       ├── website.py         # Email + social + health
+│       └── social.py          # IG/TK/FB followers
+│
+├── web/
+│   ├── index.html             # Dashboard UI
+│   ├── app.js                 # Frontend logic
+│   ├── style.css              # Dark theme
+│   ├── server.py              # HTTP server + API
+│   └── favicon.png            # Logo
+│
+└── output/
+    └── encontreras.db         # Base de datos SQLite (auto-generada)
+```
+
+---
+
+## 🛠️ Todos los Comandos
+
+| Comando | Descripción |
+|---|---|
+| `make install` | Setup completo desde cero |
+| `make run q="tacos" l="CDMX"` | Extrae leads |
+| `make run-visible q="..." l="..."` | Extrae con navegador visible |
+| `make serve` | Dashboard en `:8888` |
+| `make worker` | Worker de tareas (Huey) |
+| `make synthesize` | IA analiza prospectos |
+| `make notion-sync` | Sube a Notion |
+| `make help` | Ver todos los atajos |
+
+---
+
+## 🔒 Seguridad
+
+- **Tus API keys nunca se suben a Git**: `.env` está en `.gitignore`
+- **Sin servidores externos**: Todo corre en tu máquina local
+- **Sin tracking**: No recopilamos datos de uso ni telemetría
+- **Datos locales**: Tu base de datos SQLite vive en `output/` (también gitignored)
+
+---
+
+## 🤝 ¿Quieres contribuir?
+
+1. Haz un fork del proyecto
+2. Crea una rama: `git checkout -b mi-feature`
+3. Haz tus cambios y commitea: `git commit -m "feat: mi mejora"`
+4. Sube tu rama: `git push origin mi-feature`
+5. Abre un Pull Request
+
+Ideas de contribución:
+- 🌍 Soporte para scraping en otros países (ajustar selectores)
+- 📊 Más métricas en el Dashboard (gráficas, exportar desde la web)
+- 🤖 Soporte para otros LLMs (OpenAI, Anthropic, Ollama local)
+- 🧪 Tests automatizados para los módulos de Fase 2
+
+---
+
+## 📜 Licencia
+
+MIT — Úsalo, modifícalo, distribúyelo libremente.
 
 ---
 
 # English Version
 
-**Encontreras** is an Autonomous Agent (Proof of Concept) in Python designed for the extraction, enrichment, and semantic evaluation of B2B sales prospects.
+**Encontreras** is a free, open-source autonomous agent for B2B lead generation. It scrapes Google Maps, audits websites, checks social media presence, scores leads, and uses AI to draft personalized cold messages — all running locally on your machine.
 
-## 🎯 Purpose: From Scraper to Intelligence Agent
-
-Most extraction tools are limited to downloading empty lists from Google Maps. **Encontreras** was built with an **Outbound Sales Intelligence** mindset. Its goal is to demonstrate how to *abstract valuable information and context* from a business's public digital footprint before making the first contact.
-
-Instead of just giving you a phone number, the agent profiles the prospect: Is their website optimized? Are they active on social media? Do they have good reviews but a poor digital presence? This information is gold for crafting highly personalized Cold DMs/Emails.
-
----
-
-## ⚙️ How it Works (The Pipeline)
-
-The system operates as a cascading enrichment funnel:
-
-1. **Base Scraping (Google Maps)**: Extracts NAP (Name, Address, Phone), hours, category, price level, and reviews of businesses in a specific city.
-2. **Web Audit & Enrichment**: Automatically navigates to the business's website (if available). Extracts emails, finds real social media links, and **evaluates site health** (e.g., if the page is down, missing an H1 tag, or not mobile-optimized).
-3. **Social Thermometer**: Visits their Instagram, TikTok, and Facebook profiles to extract follower counts, providing a proxy for their reach and audience size.
-4. **Entity Resolution (Deduplication)**: Cleans the database by merging duplicate records using phone numbers and web domains as unique identifiers.
-5. **Lead Scoring**: Classifies lead quality (Excellent, Rescued, Weak) from 0 to 5 based on data completeness and their digital footprint.
-
----
-
-## 🚀 How to Test It (Proof of Concept)
-
-Install the dependencies and run the agent in your own terminal to see the live extraction.
-
-### 1. Installation
-```bash
-# Create and activate virtual environment
-python -m venv .venv
-source .venv/bin/activate
-
-# Install project dependencies
-pip install -e .
-
-# Install automated browsers (Playwright)
-playwright install chromium
-```
-
-### 2. Run an Extraction (CLI)
-To see the "magic" live, we recommend running the tool with the "headless" mode disabled so you can watch the robot navigate the pages.
+## ⚡ Quick Start
 
 ```bash
-# Example: Search for dance academies in Monterrey (opening the browser visually)
-.venv/bin/python main.py run --query "academia" --location "Monterrey" --max-results 10 --no-headless
-```
-*Upon completion, data is automatically saved in the `/output` folder in `.csv` and `.json` formats.*
-
-### 3. View Results (Local Dashboard)
-The project includes an interactive web dashboard to analyze and filter the collected prospects.
-
-```bash
-# Start the local server with hot-reload
-.venv/bin/python main.py serve --reload
-```
-Open **[http://localhost:8888](http://localhost:8888)** in your browser. 
-There you can view the results table, click on each prospect for a full diagnostic, and quickly filter businesses that have a **"Website with issues"**.
-
-#### 🤖 Start the Background Worker (Optional for Web Extractions)
-💡 **New Feature**: Data is now persistently saved to a local **SQLite database** (`output/encontreras.db`). To trigger new background extractions directly from the Dashboard UI form via job queues (Sidekiq-style), open a second terminal and start the Huey consumer:
-
-```bash
-# In another terminal (Terminal 2) with the virtual environment activated
-.venv/bin/huey_consumer src.core.tasks.huey
+git clone https://github.com/tuusuario/encontreras.git
+cd encontreras
+make install         # Sets up venv, deps, and Chromium
+make run q="dentists" l="Mexico City"   # Extract leads
+make serve           # Dashboard at http://localhost:8888
 ```
 
----
-
-## 🧠 Phase 2: AI Intelligence & Notion Sync (Implemented)
-
-### 4. Set Up Environment Variables
-
+For AI features, copy `.env.example` to `.env` and add your free [Gemini API key](https://aistudio.google.com/apikey):
 ```bash
 cp .env.example .env
+make synthesize      # AI analyzes your leads
 ```
 
-Open `.env` with your editor and paste the 3 keys you'll obtain below:
+## How It Works
 
-#### 🔑 `GEMINI_API_KEY` — Google AI Studio (Free)
-1. Go to **[aistudio.google.com/apikey](https://aistudio.google.com/apikey)**
-2. Sign in with your Google account
-3. Click **"Create API Key"** → select a project (or create one)
-4. Copy the key (starts with `AIza...`)
-
-> 💡 The free tier of Gemini Flash includes ~15 requests/min and ~1M tokens/day.
-
-#### 🔑 `NOTION_TOKEN` — Notion Integration
-1. Go to **[notion.so/profile/integrations](https://www.notion.so/profile/integrations)**
-2. Click **"+ New integration"** → name it `encontreras-sync`
-3. Make sure it has **Read**, **Insert**, and **Update content** permissions
-4. Copy the **Internal Integration Secret** (starts with `ntn_...`)
-5. ⚠️ **Extra step**: Open your Sniper List database in Notion → `•••` → **Connections** → **Connect to** → `encontreras-sync`
-
-#### 🔑 `NOTION_DATABASE_ID` — Your Sniper List ID
-1. Open your "Sniper List" database in the **browser**
-2. Copy the URL, which looks like:
-   ```
-   https://www.notion.so/your-workspace/abc123def456...?v=xyz
-                                         ^^^^^^^^^^^^^^^^
-                                         THIS is your Database ID
-   ```
-3. The ID is the 32-character string **after the last `/`** and **before the `?`**
-
-### 5. Analyze Prospects with AI (Gemini Flash)
-Run AI synthesis on leads with Score ≥ 3 to generate context, analysis, and a personalized DM:
-```bash
-.venv/bin/python main.py synthesize
+```
+Google Maps → Website Audit → Social Check → Dedup → Score → AI → Notion
 ```
 
-### 6. Sync to Notion (Sniper List)
-Push AI-analyzed leads to your Notion database:
-```bash
-.venv/bin/python main.py notion-sync
-```
+1. **Scrape** business data from Google Maps (name, phone, address, reviews, etc.)
+2. **Audit** their website for emails, social links, and technical health issues
+3. **Check** their Instagram, TikTok, and Facebook follower counts
+4. **Deduplicate** by phone number and web domain
+5. **Score** each lead from 0 (spam) to 5 (excellent)
+6. **Synthesize** with Gemini Flash AI to generate context and a personalized DM
+7. **Sync** qualified leads to your Notion CRM
+
+## All Commands
+
+| Command | Description |
+|---|---|
+| `make install` | Full setup from scratch |
+| `make run q="tacos" l="CDMX"` | Extract leads |
+| `make serve` | Dashboard at `:8888` |
+| `make worker` | Background task worker |
+| `make synthesize` | AI analyzes prospects |
+| `make notion-sync` | Push to Notion |
+| `make help` | Show all shortcuts |
+
+## Security
+
+- API keys stay local (`.env` is gitignored)
+- No external servers — everything runs on your machine
+- No tracking or telemetry
+- SQLite database stays in `output/` (also gitignored)
 
 ---
-*Open Source / MIT License*
+
+*MIT License · Made with 🎯 for the outbound sales community*
