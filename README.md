@@ -70,13 +70,29 @@ Allí podrás ver la tabla de resultados, hacer clic en cada prospecto para ver 
 
 ---
 
-## 🔮 Roadmap: Hacia el CRM Autónomo (Fase 2)
+## 🧠 Fase 2: Inteligencia Artificial & Notion (Implementado)
 
-El proyecto está diseñado en dos fases. La fase actual (Fase 1) recolecta la data y aplica reglas métricas básicas. La **Fase 2 (En Desarrollo)** evolucionará la herramienta hacia un motor de abstracción semántica profunda con IA:
+### 4. Configurar Variables de Entorno
+Copia `.env.example` a `.env` y agrega tus llaves:
+```bash
+cp .env.example .env
+# Edita .env con tu editor favorito y pega:
+# GEMINI_API_KEY="tu-llave-de-google-ai-studio"
+# NOTION_TOKEN="tu-secret-de-integracion-notion"
+# NOTION_DATABASE_ID="id-de-tu-base-sniper-list"
+```
 
-- **Anatomía de Audiencias**: Abstracción de métricas asimétricas (a quién siguen de vuelta, frecuencia de posts) para inferir madurez digital.
-- **Contexto y Rompehielos (LLMs)**: Integración con Inteligencia Artificial generativa para sintetizar los problemas encontrados (ej. página web sin optimizar + buen rating de maps) y auto-redactar el primer renglón del mensaje de venta (DM) hiper-personalizado.
-- **Sincronización Directa (Notion API)**: Exportación directa a un CRM de Notion ("Sniper List") sin necesidad de manipular archivos CSV.
+### 5. Analizar Prospectos con IA (Gemini Flash)
+Ejecuta la IA sobre los prospectos con Score ≥ 3 para generar contexto, análisis y un DM personalizado:
+```bash
+.venv/bin/python main.py synthesize
+```
+
+### 6. Sincronizar a Notion (Sniper List)
+Envía los prospectos ya analizados a tu base de datos de Notion:
+```bash
+.venv/bin/python main.py notion-sync
+```
 
 ---
 
@@ -150,13 +166,29 @@ There you can view the results table, click on each prospect for a full diagnost
 
 ---
 
-## 🔮 Roadmap: Towards the Autonomous CRM (Phase 2)
+## 🧠 Phase 2: AI Intelligence & Notion Sync (Implemented)
 
-The project is designed in two phases. The current phase (Phase 1) collects data and applies basic metric rules. **Phase 2 (In Development)** will evolve the tool into an AI-powered deep semantic abstraction engine:
+### 4. Set Up Environment Variables
+Copy `.env.example` to `.env` and add your keys:
+```bash
+cp .env.example .env
+# Edit .env and paste:
+# GEMINI_API_KEY="your-google-ai-studio-key"
+# NOTION_TOKEN="your-notion-integration-secret"
+# NOTION_DATABASE_ID="your-sniper-list-database-id"
+```
 
-- **Audience Anatomy**: Abstraction of asymmetrical metrics (followers vs following, post frequency) to infer digital maturity.
-- **Context & Icebreakers (LLMs)**: Integration with generative AI to synthesize the found issues (e.g., unoptimized website + good Maps rating) and auto-draft the highly personalized first line of the sales message (Cold DM).
-- **Direct Sync (Notion API)**: Direct export to a Notion CRM ("Sniper List") without the need to handle CSV files.
+### 5. Analyze Prospects with AI (Gemini Flash)
+Run AI synthesis on leads with Score ≥ 3 to generate context, analysis, and a personalized DM:
+```bash
+.venv/bin/python main.py synthesize
+```
+
+### 6. Sync to Notion (Sniper List)
+Push AI-analyzed leads to your Notion database:
+```bash
+.venv/bin/python main.py notion-sync
+```
 
 ---
 *Open Source / MIT License*
