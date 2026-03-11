@@ -288,7 +288,7 @@ function renderTable() {
         return `
             <tr data-index="${i}" onclick="showDetail(${i})">
                 <td style="text-align:center"><span class="score-badge score-${score}">${score}</span></td>
-                <td><strong>${escapeHtml(b.name || "—")}</strong></td>
+                <td><strong>${escapeHtml(b.name || "—")}</strong>${b.context ? ' <span title="Analizado por IA" style="cursor:help">🧠</span>' : ''}</td>
                 <td>${escapeHtml(b.phone || "—")}</td>
                 <td>${domain}</td>
                 <td>${emails}</td>
@@ -376,6 +376,9 @@ function showDetail(index) {
         ["Seguidores IG", escapeHtml(b.ig_followers) || "—"],
         ["Seguidores TK", escapeHtml(b.tiktok_followers) || "—"],
         ["Seguidores FB", escapeHtml(b.fb_followers) || "—"],
+        ["🧠 Contexto IA", b.context ? `<em style="color:var(--accent-primary)">${escapeHtml(b.context)}</em>` : '<span style="color:var(--text-secondary)">Pendiente — ejecuta <code>make synthesize</code></span>'],
+        ["💡 Why They Matter", b.why_they_matter ? `<em style="color:var(--score-5)">${escapeHtml(b.why_they_matter)}</em>` : "—"],
+        ["💬 Icebreaker (DM)", b.icebreaker ? `<div style="background:var(--bg-secondary);padding:0.75rem;border-radius:8px;border-left:3px solid var(--accent-primary);margin-top:0.25rem">${escapeHtml(b.icebreaker)}</div>` : "—"],
         ["Google Maps", b.maps_url ? `<a href="${escapeHtml(b.maps_url)}" target="_blank">Abrir ficha Maps ↗</a>` : "—"]
     ];
 
