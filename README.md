@@ -73,14 +73,37 @@ Allí podrás ver la tabla de resultados, hacer clic en cada prospecto para ver 
 ## 🧠 Fase 2: Inteligencia Artificial & Notion (Implementado)
 
 ### 4. Configurar Variables de Entorno
-Copia `.env.example` a `.env` y agrega tus llaves:
+
 ```bash
 cp .env.example .env
-# Edita .env con tu editor favorito y pega:
-# GEMINI_API_KEY="tu-llave-de-google-ai-studio"
-# NOTION_TOKEN="tu-secret-de-integracion-notion"
-# NOTION_DATABASE_ID="id-de-tu-base-sniper-list"
 ```
+
+Abre `.env` con tu editor y pega las 3 llaves que obtendrás a continuación:
+
+#### 🔑 `GEMINI_API_KEY` — Google AI Studio (Gratis)
+1. Ve a **[aistudio.google.com/apikey](https://aistudio.google.com/apikey)**
+2. Inicia sesión con tu cuenta de Google
+3. Clic en **"Create API Key"** → selecciona un proyecto (o crea uno)
+4. Copia la llave (empieza con `AIza...`)
+
+> 💡 El tier gratuito de Gemini Flash incluye ~15 requests/min y ~1M tokens/día.
+
+#### 🔑 `NOTION_TOKEN` — Integración de Notion
+1. Ve a **[notion.so/profile/integrations](https://www.notion.so/profile/integrations)**
+2. Clic en **"+ Nueva integración"** → nómbrala `encontreras-sync`
+3. Asegúrate de que tenga permisos de **Leer**, **Insertar** y **Actualizar contenido**
+4. Copia el **Internal Integration Secret** (empieza con `ntn_...`)
+5. ⚠️ **Paso extra**: Abre tu base de datos Sniper List en Notion → `•••` → **Conexiones** → **Conectar a** → `encontreras-sync`
+
+#### 🔑 `NOTION_DATABASE_ID` — El ID de tu Sniper List
+1. Abre tu base de datos "Sniper List" en el **navegador**
+2. Copia la URL, que se ve así:
+   ```
+   https://www.notion.so/tu-workspace/abc123def456...?v=xyz
+                                       ^^^^^^^^^^^^^^^^
+                                       ESTE es tu Database ID
+   ```
+3. El ID es la cadena de 32 caracteres **después del último `/`** y **antes del `?`**
 
 ### 5. Analizar Prospectos con IA (Gemini Flash)
 Ejecuta la IA sobre los prospectos con Score ≥ 3 para generar contexto, análisis y un DM personalizado:
@@ -169,14 +192,37 @@ There you can view the results table, click on each prospect for a full diagnost
 ## 🧠 Phase 2: AI Intelligence & Notion Sync (Implemented)
 
 ### 4. Set Up Environment Variables
-Copy `.env.example` to `.env` and add your keys:
+
 ```bash
 cp .env.example .env
-# Edit .env and paste:
-# GEMINI_API_KEY="your-google-ai-studio-key"
-# NOTION_TOKEN="your-notion-integration-secret"
-# NOTION_DATABASE_ID="your-sniper-list-database-id"
 ```
+
+Open `.env` with your editor and paste the 3 keys you'll obtain below:
+
+#### 🔑 `GEMINI_API_KEY` — Google AI Studio (Free)
+1. Go to **[aistudio.google.com/apikey](https://aistudio.google.com/apikey)**
+2. Sign in with your Google account
+3. Click **"Create API Key"** → select a project (or create one)
+4. Copy the key (starts with `AIza...`)
+
+> 💡 The free tier of Gemini Flash includes ~15 requests/min and ~1M tokens/day.
+
+#### 🔑 `NOTION_TOKEN` — Notion Integration
+1. Go to **[notion.so/profile/integrations](https://www.notion.so/profile/integrations)**
+2. Click **"+ New integration"** → name it `encontreras-sync`
+3. Make sure it has **Read**, **Insert**, and **Update content** permissions
+4. Copy the **Internal Integration Secret** (starts with `ntn_...`)
+5. ⚠️ **Extra step**: Open your Sniper List database in Notion → `•••` → **Connections** → **Connect to** → `encontreras-sync`
+
+#### 🔑 `NOTION_DATABASE_ID` — Your Sniper List ID
+1. Open your "Sniper List" database in the **browser**
+2. Copy the URL, which looks like:
+   ```
+   https://www.notion.so/your-workspace/abc123def456...?v=xyz
+                                         ^^^^^^^^^^^^^^^^
+                                         THIS is your Database ID
+   ```
+3. The ID is the 32-character string **after the last `/`** and **before the `?`**
 
 ### 5. Analyze Prospects with AI (Gemini Flash)
 Run AI synthesis on leads with Score ≥ 3 to generate context, analysis, and a personalized DM:
