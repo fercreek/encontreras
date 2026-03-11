@@ -291,4 +291,11 @@ Google Maps → Website Audit → Social Check → Dedup → Score → AI → No
 
 ---
 
+## 🛰️ Ecosistema Relacionado
+
+- **💎 Frontend Comercial**: Los leads capturados y analizados aquí se presentan en [CERØ](../../cero/cero-landing/README.md).
+- **🗺️ Mapa General**: Ver el índice de todos los proyectos en el [Fernando's Project Hub](../../README.md).
+
+---
+
 *MIT License · Made with 🎯 for the outbound sales community*
