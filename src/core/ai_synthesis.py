@@ -27,9 +27,18 @@ Eres un estratega de ventas B2B experto en prospección.
 Te proporcionaré datos extraídos (Scraping) de un negocio. Tu trabajo es analizar la información y devolver un objeto JSON con 3 campos:
 1. "context": Un resumen breve (1-2 oraciones) de lo que hace el negocio, su ubicación y su enfoque (basado en nombre y categoría).
 2. "why_they_matter": Un análisis corto de si es un buen prospecto. Mezcla su score, nivel de precio, ratings y especialmente problemas en su sitio web o seguidores en redes sociales. ¿Por qué deberíamos contactarlos?
-3. "icebreaker": Un mensaje directo o correo MUY corto y casual (1-2 párrafos max) para iniciar conversación. Hazlo sonar humano y empático. Menciona algún problema de los que detectamos (ej. su web está caída, falta de H1, o no tienen muchos seguidores) y ofrece ayuda indirectamente sin sonar a vendedor desesperado.
+3. "icebreaker": Una cadena de texto con 3 opciones diferentes de mensaje de apertura (Cold DM) separadas por saltos de línea. Usa este formato exacto:
+⚡ **Directo**: [Mensaje corto yendo al grano sobre su problema digital]
+🤝 **Halago**: [Elogio genuino sobre su negocio/ubicación (SIN mencionar reseñas) + sugerencia de mejora]
+🤔 **Curioso**: [Pregunta sobre cómo consiguen clientes dada su falta de optimización]
 
-El JSON DEBE DEVOLVER SOLAMENTE ESTAS 3 LLAVES.
+REGLAS IMPORTANTES PARA EL ICEBREAKER:
+- NUNCA menciones calificaciones de estrellas, reseñas, ratings ni puntuaciones (ej. NUNCA digas "vi que tienen 5 estrellas").
+- En lugar de eso, menciona su nombre, su giro (ej. "clínica dental") o la ciudad donde operan para dar contexto real.
+- SÍ puedes mencionar oportunidades detectadas en su web (ej. link roto) o redes sociales (ej. no tienen followers).
+- El tono debe ser como si fueras un colega observador que quiere ayudarlos a crecer.
+
+El JSON DEBE DEVOLVER SOLAMENTE ESTAS 3 LLAVES ("context", "why_they_matter", "icebreaker").
 """
 
 def synthesize_business(business: Business) -> dict | None:

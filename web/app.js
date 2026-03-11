@@ -378,7 +378,7 @@ function showDetail(index) {
         ["Seguidores FB", escapeHtml(b.fb_followers) || "—"],
         ["🧠 Contexto IA", b.context ? `<em style="color:var(--accent-primary)">${escapeHtml(b.context)}</em>` : '<span style="color:var(--text-secondary)">Pendiente — ejecuta <code>make synthesize</code></span>'],
         ["💡 Why They Matter", b.why_they_matter ? `<em style="color:var(--score-5)">${escapeHtml(b.why_they_matter)}</em>` : "—"],
-        ["💬 Icebreaker (DM)", b.icebreaker ? `<div style="background:var(--bg-secondary);padding:0.75rem;border-radius:8px;border-left:3px solid var(--accent-primary);margin-top:0.25rem">${escapeHtml(b.icebreaker)}</div>` : "—"],
+        ["💬 Icebreaker (DM)", b.icebreaker ? `<div style="background:var(--bg-secondary);padding:0.75rem;border-radius:8px;border-left:3px solid var(--accent-primary);margin-top:0.25rem;white-space:pre-wrap;">${escapeHtml(b.icebreaker)}</div>` : "—"],
         ["Google Maps", b.maps_url ? `<a href="${escapeHtml(b.maps_url)}" target="_blank">Abrir ficha Maps ↗</a>` : "—"]
     ];
 
