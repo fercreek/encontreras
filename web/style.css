@@ -64,6 +64,34 @@ body {
     gap: 14px;
 }
 
+.nav-links {
+    display: flex;
+    gap: 16px;
+    margin-left: 20px;
+    padding-left: 20px;
+    border-left: 1px solid var(--border);
+}
+
+.nav-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-link.active {
+    color: var(--bg-primary);
+    background: var(--text-primary);
+}
+
 .logo {
     font-size: 1.4rem;
     font-weight: 700;

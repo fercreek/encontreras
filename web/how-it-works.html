@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>encontreras — Cómo funciona</title>
+    <meta name="description" content="Aprende cómo está construido el agente autónomo encontreras">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .landing-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .landing-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .landing-header h1 {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            background: var(--gradient-header);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .landing-header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section p {
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        .section ul, .section ol {
+            margin-left: 24px;
+            margin-bottom: 24px;
+            color: var(--text-secondary);
+        }
+
+        .section li {
+            margin-bottom: 8px;
+        }
+
+        .code-block {
+            background: var(--bg-primary);
+            padding: 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            color: var(--score-5);
+            margin: 16px 0;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+        }
+
+        .pipeline-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 32px 0;
+        }
+
+        .step {
+            display: flex;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            align-items: flex-start;
+            gap: 16px;
+            position: relative;
+        }
+
+        .step::after {
+            content: '↓';
+            position: absolute;
+            bottom: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--accent-primary);
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .step:last-child::after {
+            display: none;
+        }
+
+        .step-icon {
+            font-size: 2rem;
+            background: rgba(59, 130, 246, 0.1);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            font-size: 1.1rem;
+        }
+
+        .step-content p {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .tech-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .tech-tag {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <h1 class="logo">🔍 encontreras</h1>
+            <span class="badge">Fase 1 · MVP</span>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">📊 Dashboard</a>
+                <a href="how-it-works.html" class="nav-link active">📖 Cómo funciona</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="landing-container">
+        <div class="landing-header">
+            <h1>De Scraper a Agente Autónomo</h1>
+            <p>Conoce la arquitectura detrás de Encontreras y cómo usa Playwright y LLMs para revolucionar el Outbound B2B.</p>
+        </div>
+
+        <section class="section">
+            <h2>🚨 El Problema del Scraping Tradicional</h2>
+            <p>La mayoría de los vendedores B2B compran bases de datos frías o usan extractores genéricos. El resultado es siempre el mismo: una tabla de Excel con miles de nombres y teléfonos que nadie contesta.</p>
+            <p><strong>Encontreras piensa diferente.</strong> No queremos un millón de teléfonos inútiles. Queremos 50 prospectos de alta calidad, con contexto real de su negocio, sabiendo exactamente dónde les duele (¿su web está caída? ¿nadie los sigue en redes?). Ese contexto es la diferencia entre un vendedor pesado y un consultor valioso.</p>
+        </section>
+
+        <section class="section">
+            <h2>⚙️ La Arquitectura (Pipeline)</h2>
+            <p>El código corre localmente en tu máquina como una tubería en cascada:</p>
+            
+            <div class="pipeline-diagram">
+                <div class="step">
+                    <div class="step-icon">🗺️</div>
+                    <div class="step-content">
+                        <h3>1. Extracción Base (Google Maps)</h3>
+                        <p>Usamos un navegador invisible para buscar en Maps, controlando la página como un humano. Extraemos el NAP (Name, Address, Phone), rating y links.</p>
+                        <div class="tech-tags"><span class="tech-tag">Playwright</span><span class="tech-tag">BeautifulSoup</span></div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-icon">🕵️‍♂️</div>
+                    <div class="step-content">
+                        <h3>2. Auditoría Web</h3>
+                        <p>Por cada prospecto, visitamos su sitio web. Buscamos emails directos, redes sociales reales (evitando links a share/wix) y medimos la salud técnica de su HTML.</p>
+                        <div class="tech-tags"><span class="tech-tag">RegEx</span><span class="tech-tag">HTTP Sessions</span></div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-icon">📊</div>
+                    <div class="step-content">
+                        <h3>3. Lead Scoring & Deduplicación</h3>
+                        <p>Limpiamos la basura. Si dos negocios comparten teléfono o dominio, los unimos. Luego les damos un Score (0-5). A los que no tienen teléfono ni web los devaluamos.</p>
+                        <div class="tech-tags"><span class="tech-tag">SQLite UPSERT</span><span class="tech-tag">Heuristics</span></div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-icon">🧠</div>
+                    <div class="step-content">
+                        <h3>4. Síntesis IA (Gemini Flash)</h3>
+                        <p>Mandamos todo el JSON al modelo fundacional. Le pedimos que actúe como un estratega B2B, analice las debilidades y redacte 3 rompehielos ultra-personalizados.</p>
+                        <div class="tech-tags"><span class="tech-tag">Google GenAI SDK</span><span class="tech-tag">Prompt Engineering</span></div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-icon">📓</div>
+                    <div class="step-content">
+                        <h3>5. Exportación a CRM (Notion API)</h3>
+                        <p>Finalmente, los leads cualificados y analizados por la IA son enviados directamente a tu base de datos de Notion (Sniper List), listos para que los contactes.</p>
+                        <div class="tech-tags"><span class="tech-tag">Notion SDK</span><span class="tech-tag">REST API</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🛠️ ¿Por qué construirlo así?</h2>
+            
+            <p><strong>¿Por qué Playwright y no Requests/BeautifulSoup solos?</strong><br>
+            Google Maps renderiza toda su data dinámicamente con JavaScript. Una simple petición HTTP devuelve una página en blanco. Playwright levanta un Chromium real que ejecuta JS y engaña los métodos anti-scraping simulando <em>scrolls</em> y <em>clicks</em>.</p>
+            
+            <p><strong>¿Por qué SQLite?</strong><br>
+            Almacenar en JSON está bien para 10 registros, pero cuando pasas de 500, necesitas un motor de BD real para deduplicar eficientemente con <code>UPSERT (ON CONFLICT DO UPDATE)</code> y para servir la API del Dashboard en tiempo real a alta velocidad.</p>
+
+            <p><strong>¿Por qué procesar en background (Worker / Huey)?</strong><br>
+            Ir a Google Maps, entrar a 10 páginas web, navegar por Instagram y consultar a una IA toma mucho **tiempo IO**. Si lo hiciéramos bloqueando el servidor HTTP, el Dashboard tardaría 3 minutos en cargar una página web. Huey procesa todo asíncronamente en segundo plano, manteniendo el UI fluido.</p>
+        </section>
+
+        <section class="section">
+            <h2>💡 ¿Qué puedes vender con estos datos?</h2>
+            <ul>
+                <li><strong>Agencia SEO</strong>: Filtra los negocios con <code>Web con Problemas</code>. Mándales el DM "Directo" diciendo que su página está caída.</li>
+                <li><strong>Agencia de Redes Sociales</strong>: Busca negocios con 5 estrellas en Maps, pero con 0 seguidores en Instagram. Escríbeles el DM "Halago" destacando que su excelente servicio en persona no se refleja en digital.</li>
+                <li><strong>Venta de Software (SaaS)</strong>: Analiza los horarios de miles de clínicas y véndeles un sistema de reservas si ves que no tienen botón de agendar en su web.</li>
+            </ul>
+        </section>
+    </main>
+</body>
+
+</html>
