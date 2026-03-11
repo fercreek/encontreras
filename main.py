@@ -15,8 +15,11 @@ from enum import Enum
 
 import typer
 from rich.console import Console
+from dotenv import load_dotenv
 
 from src.core.config import DEFAULT_MAX_RESULTS, DEFAULT_OUTPUT_DIR
+
+load_dotenv()
 
 app = typer.Typer(
     name="encontreras",

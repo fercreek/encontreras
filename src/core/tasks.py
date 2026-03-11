@@ -33,14 +33,15 @@ def run_extraction_job(query: str, location: str, max_results: int, output_dir: 
         status_file.write_text(json.dumps(status_data, ensure_ascii=False))
         
         # Run the pipeline silently (headless=True)
-        run_pipeline(
+        import asyncio
+        asyncio.run(run_pipeline(
             query=query,
             location=location,
             max_results=max_results,
-            output_format="both",  # Or whatever default we want
+            output_format="both",
             output_dir=output_dir,
             headless=True
-        )
+        ))
         return {"status": "success", "query": query, "location": location}
     except Exception as e:
         # Re-raise so Huey registers it as an error
