@@ -118,6 +118,42 @@ async def run_pipeline(
         f"[green]✔ {len(businesses)} registros → {len(df)} entidades únicas[/green]\n"
     )
 
+    # ── Step 4.5: Filtro Semántico B2B (Fase 2) ───────────────────────────
+    console.rule("[bold]Paso 4.5 · Filtro Semántico B2B (Fase 2)[/bold]")
+    from src.core.semantic_filter import qualify_lead
+    
+    qualified_businesses = []
+    
+    for i, biz in enumerate(businesses, 1):
+        if not biz.bio_text and not biz.description and not biz.recent_posts:
+            # Reutiliza description si no hay bio
+            biz.bio_text = biz.description
+            
+        console.print(f"  [{i}/{len(businesses)}] Calificando nicho de {biz.name}…")
+        qualification = qualify_lead(biz.bio_text, biz.recent_posts)
+        
+        if qualification:
+            biz.is_target_niche = qualification.is_target_niche
+            biz.inferred_niche = qualification.inferred_niche
+            biz.match_type = qualification.match_type.value
+            biz.semantic_confidence = qualification.confidence_score
+            biz.filter_reasoning = qualification.reasoning
+            
+            if qualification.is_target_niche:
+                qualified_businesses.append(biz)
+            else:
+                console.print(f"[dim red]    ✗ Descartado: {qualification.reasoning}[/dim red]")
+        else:
+            # Falla el API, pasar por defecto si el Lead Score es alto
+            if biz.score >= 3:
+                qualified_businesses.append(biz)
+
+    # Reflejamos el df solo con los calificados
+    df = resolve_entities(qualified_businesses)
+    console.print(
+        f"\n[green]✔ {len(qualified_businesses)} entidades sobrevivieron al Filtro Semántico Implacable[/green]\n"
+    )
+
     # ── Step 5: Export ────────────────────────────────────────────────────
     console.rule("[bold]Paso 5 · Exportación[/bold]")
     

@@ -54,6 +54,15 @@ class Business:
     notion_url: str | None = None
     fb_followers: str | None = None
 
+    # ── Phase 2: Semantic Filtering ───────────────────────────────────────
+    bio_text: str | None = None
+    recent_posts: list[str] = field(default_factory=list)
+    is_target_niche: bool | None = None
+    inferred_niche: str | None = None
+    match_type: str | None = None
+    semantic_confidence: int | None = None
+    filter_reasoning: str | None = None
+
     def __post_init__(self) -> None:
         """Derive domain from website URL if not explicitly provided."""
         if self.website and not self.domain:

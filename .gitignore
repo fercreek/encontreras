@@ -7,10 +7,14 @@ dist/
 build/
 *.egg
 
-# Virtual environments
+# Virtual environments & Dependencies
 .venv/
 venv/
 env/
+node_modules/
+**/node_modules/
+dist/
+**/dist/
 
 # IDE
 .vscode/
@@ -32,7 +36,12 @@ output/
 .env
 .env.local
 
-# Local state (Huey, pytest)
+# Local state (Huey, pytest, SQLite)
 .pytest_cache/
+*.db
+*.db-journal
 output/huey_queue.db*
 output/running_status.json
+
+# Client Memory & Context
+storage/clients/
