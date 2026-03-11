@@ -1,16 +1,16 @@
-# encontreras 🎯 | Consigue Leads B2B Sin Complicaciones
+# encontreras 🎯 | Aprende a construir tu primer Agente Autónomo B2B
 
 <p align="center">
   <img src="web/favicon.png" alt="encontreras logo" width="120">
 </p>
 
 <p align="center">
-  <strong>Agente autónomo que extrae, enriquece y califica prospectos de Google Maps con IA.</strong><br>
-  <em>100% local, 100% gratis, 0 dependencias en la nube.</em>
+  <strong>Proyecto educativo Open-Source para aprender a extraer, enriquecer y calificar prospectos con IA.</strong><br>
+  <em>100% local, 100% gratis, 0 código en la nube de terceros.</em>
 </p>
 
 <p align="center">
-  <a href="#cómo-funciona-el-pipeline">¿Cómo funciona?</a> ·
+  <a href="#cómo-funciona-el-pipeline">Arquitectura</a> ·
   <a href="#-quickstart-5-minutos">Quickstart</a> ·
   <a href="#-fase-2-inteligencia-artificial--notion">IA & Notion</a> ·
   <a href="#english-version">English</a>
@@ -18,11 +18,13 @@
 
 ---
 
-## ¿Para qué sirve?
+## 🎯 ¿Para qué sirve este repositorio?
 
-La mayoría de las herramientas de scraping te dan una lista vacía de teléfonos. **Encontreras** va más allá: perfila al prospecto analizando su huella digital (web, redes, reseñas) y usa **Inteligencia Artificial** para redactarte un mensaje de apertura personalizado.
+**Encontreras no es un producto comercial ni un SaaS.** Es un entorno educativo diseñado para que aprendas cómo interactúan herramientas modernas de automatización (Playwright) y bases de datos locales (SQLite) con Modelos de Lenguaje Grande (Google Gemini Flash) para resolver un problema real: **la prospección de ventas B2B**.
 
-**Ideal para**: freelancers, agencias de marketing digital, consultores, o cualquiera que quiera conseguir clientes B2B de forma orgánica sin pagar herramientas caras.
+La mayoría de los tutoriales de IA se quedan en chatbots básicos. Este proyecto te enseña a construir un pipeline asíncrono que "ve" el internet, audita sitios web y redacta  **Icebreakers** (*Rompehielos*) hiper-personalizados, dándote control total de tus datos al exportarlos a CSV o conectarlos directamente con Notion.
+
+**Ideal para**: Desarrolladores Jr/Mid que quieren aprender sobre Agentes Autónomos, o profesionales no técnicos que quieren bajar el repositorio a sus computadoras para automatizar sus ventas sin pagar costosas suscripciones.
 
 ---
 
